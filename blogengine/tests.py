@@ -87,3 +87,62 @@ class AdminTest(LiveServerTestCase):
 
 		# Check the response text again
 		self.assertTrue('Log in' in smart_text(response.content))
+
+	def testCreatePost(self):
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Check the response code
+		response = self.client.get('/admin/blogengine/post/add/', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Create a test post
+		response = self.client.post('/admin/blogengine/post/add/', {
+			'title': 'Test post',
+			'text': 'This is a test post for testing.',
+			'pubDate_0': '2015-12-30',
+			'pubDate_1': '12:56:05'
+			},
+			follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check added successfully
+		self.assertTrue('added successfully' in smart_text(response.content))
+
+		# Check that the post is now in the database
+		allPosts = Post.objects.all()
+		self.assertEquals(len(allPosts), 1)
+
+	def testEditPost(self):
+
+		# Create the post
+		post = Post()
+		post.title = 'Test post number 1'
+		post.text = 'This is the first test post for testing.'
+		post.pubDate = timezone.now()
+		post.save()
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Edit the post
+		response = self.client.post('/admin/blogengine/post/2/change/', {
+			'title': 'Test post number 2',
+			'text': 'This is the second test post for testing.',
+			'pubDate_0': '2015-12-30',
+			'pubDate_1': '12:56:05'
+        },
+        follow = True
+        )
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the changes were successfull
+		self.assertTrue('changed successfully' in smart_text(response.content))
+
+		# Check post amended
+		allPosts = Post.objects.all()
+		self.assertEquals(len(allPosts), 1)
+		onlyPost = allPosts[0]
+		self.assertEquals(onlyPost.title, 'Test post number 2')
+		self.assertEquals(onlyPost.text, 'This is the second test post for testing.')
