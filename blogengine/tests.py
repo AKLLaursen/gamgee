@@ -41,13 +41,14 @@ class AdminTest(LiveServerTestCase):
 	# Load fixtures
 	fixtures = ['users.json']
 
+	# Set-up client
+	def setUp(self):
+		self.client = Client()
+
 	def testLogIn(self):
 
-		# Create the client
-		cl = Client()
-
 		# Get the login page, note that redirection has to be given explicitly, otherwise a 302 response code is given.
-		response = cl.get('/admin/', follow = True)
+		response = self.client.get('/admin/', follow = True)
 
 		# Check the response code
 		self.assertEquals(response.status_code, 200)
@@ -56,10 +57,10 @@ class AdminTest(LiveServerTestCase):
 		self.assertTrue('Log in' in smart_text(response.content))
 
 		# Log the user in
-		cl.login(username = 'testuser', password = 'testuserpass')
+		self.client.login(username = 'testuser', password = 'testuserpass')
 
 		# Check the response code again
-		response = cl.get('/admin/', follow = True)
+		response = self.client.get('/admin/', follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Check the response text again
@@ -67,26 +68,22 @@ class AdminTest(LiveServerTestCase):
 
 	def testLogOut(self):
 
-		# Create the client
-		cl = Client()
-
 		# Log the user in
-		cl.login(username = 'testuser', password = 'testuserpass')
+		self.client.login(username = 'testuser', password = 'testuserpass')
 
 		# Check the response code
-		response = cl.get('/admin/', follow = True)
+		response = self.client.get('/admin/', follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Check the response text
 		self.assertTrue('Log out' in smart_text(response.content))
 
 		# Log out
-		cl.logout()
+		self.client.logout()
 
 		# Check the response code again
-		response = cl.get('/admin/', follow = True)
+		response = self.client.get('/admin/', follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Check the response text again
 		self.assertTrue('Log in' in smart_text(response.content))
-		
