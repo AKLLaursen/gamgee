@@ -38,6 +38,8 @@ class PostTest(TestCase):
 # Test login on the admin page
 class AdminTest(LiveServerTestCase):
 
+	# Known bug: Id increments seem quite random. May have to fix this.
+
 	# Load fixtures
 	fixtures = ['users.json']
 
@@ -127,7 +129,7 @@ class AdminTest(LiveServerTestCase):
 		self.client.login(username = 'testuser', password = 'testuserpass')
 
 		# Edit the post
-		response = self.client.post('/admin/blogengine/post/2/change/', {
+		response = self.client.post('/admin/blogengine/post/3/change/', {
 			'title': 'Test post number 2',
 			'text': 'This is the second test post for testing.',
 			'pubDate_0': '2015-12-30',
@@ -146,3 +148,30 @@ class AdminTest(LiveServerTestCase):
 		onlyPost = allPosts[0]
 		self.assertEquals(onlyPost.title, 'Test post number 2')
 		self.assertEquals(onlyPost.text, 'This is the second test post for testing.')
+
+	def testDeletePost(self):
+		# Creates the post
+		post = Post()
+
+		# Sets the attributes of the post
+		post.title = 'Test post'
+		post.text = 'This is a test post for testing.'
+		post.pubDate = timezone.now()
+		post.save()
+
+		# Check that a new post is saved
+		allPosts = Post.objects.all()
+		self.assertEquals(len(allPosts), 1)
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Delete the post
+		response = self.client.post('/admin/blogengine/post/2/delete/', {
+			'post': 'yes'
+			}, follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the post was deleted successfully
+		self.assertTrue('deleted successfully' in smart_text(response.content))
+		
