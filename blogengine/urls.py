@@ -4,7 +4,7 @@ from blogengine.models import Post
 
 # Note that patterns has been deprecated since 1.8.
 
-urlPatterns = [
+urlpatterns = [
 		# Index
 		url('^$', ListView.as_view(
 			model = Post,

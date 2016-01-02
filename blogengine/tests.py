@@ -45,7 +45,6 @@ class AdminTest(LiveServerTestCase):
 
 	# Set-up client
 	def setUp(self):
-
 		self.client = Client()
 
 	def testLogIn(self):
@@ -183,3 +182,40 @@ class AdminTest(LiveServerTestCase):
 
 		# Check that the post was deleted successfully
 		self.assertTrue('deleted successfully' in smart_text(response.content))
+
+# Test for Views
+class PostViewTest(LiveServerTestCase):
+
+	# Set-up client
+	def setUp(self):
+		self.client = Client()
+
+	def testIndex(self):
+
+		#Create a post
+		post = Post()
+
+		# Sets the attributes of the post
+		post.title = 'Test post'
+		post.text = 'This is a test post for testing.'
+		post.pubDate = timezone.now()
+		post.save()
+
+		# Check that a new post is saved
+		allPosts = Post.objects.all()
+		self.assertEquals(len(allPosts), 1)
+
+		# Get the index
+		response = self.client.get('/', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the post title is in the reponse
+		self.assertTrue(post.title in smart_text(response.content))
+
+		# Check that the post text is in the response
+		self.assertTrue(post.title in smart_text(response.content))
+
+		# Check that the post date is in the response
+		self.assertTrue(str(post.pubDate.year) in smart_text(response.content))
+		self.assertTrue(post.pubDate.strftime('%b') in smart_text(response.content))
+		self.assertTrue(str(post.pubDate.day) in smart_text(response.content))
