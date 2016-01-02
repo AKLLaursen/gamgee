@@ -45,6 +45,7 @@ class AdminTest(LiveServerTestCase):
 
 	# Set-up client
 	def setUp(self):
+
 		self.client = Client()
 
 	def testLogIn(self):
@@ -128,8 +129,12 @@ class AdminTest(LiveServerTestCase):
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
 
+		# Get the ID of the post, as this is subject to change
+		allPosts = Post.objects.all()
+		postId = allPosts[0].id
+
 		# Edit the post
-		response = self.client.post('/admin/blogengine/post/3/change/', {
+		response = self.client.post(('/admin/blogengine/post/' + str(postId) + '/change/'), {
 			'title': 'Test post number 2',
 			'text': 'This is the second test post for testing.',
 			'pubDate_0': '2015-12-30',
@@ -142,7 +147,7 @@ class AdminTest(LiveServerTestCase):
 		# Check that the changes were successfull
 		self.assertTrue('changed successfully' in smart_text(response.content))
 
-		# Check post amended
+		# Check post amended. Get all post objects again to make sure nothing has changed.
 		allPosts = Post.objects.all()
 		self.assertEquals(len(allPosts), 1)
 		onlyPost = allPosts[0]
@@ -150,6 +155,7 @@ class AdminTest(LiveServerTestCase):
 		self.assertEquals(onlyPost.text, 'This is the second test post for testing.')
 
 	def testDeletePost(self):
+
 		# Creates the post
 		post = Post()
 
@@ -166,12 +172,14 @@ class AdminTest(LiveServerTestCase):
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
 
+		# Get post ID
+		postId = allPosts[0].id
+
 		# Delete the post
-		response = self.client.post('/admin/blogengine/post/2/delete/', {
+		response = self.client.post(('/admin/blogengine/post/' + str(postId) + '/delete/'), {
 			'post': 'yes'
 			}, follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Check that the post was deleted successfully
 		self.assertTrue('deleted successfully' in smart_text(response.content))
-		
