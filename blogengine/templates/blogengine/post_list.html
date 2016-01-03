@@ -1,12 +1,8 @@
-<html>
-    <head>
-        <title>Test Django Blog</title>
-    </head>
-    <body>
+{% extends "blogengine/includes/base.html" %}
+    {% block content %}
         {% for post in object_list %}
         <h1>{{ post.title }}</h1>
         <h3>{{ post.pubDate }}</h3>
         {{ post.text }}
         {% endfor %}
-    </body>
-</html>
+    {% endblock %}
