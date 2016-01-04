@@ -23,7 +23,47 @@
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        {% block content %}{% endblock %}
+        <div class="jumbotron">
+            <div class="container">
+                <h1>Data wizardry</h1>
+                <p>Andreas Keller Leth Laursen</p>
+            </div>      
+        </div>
+
+        <div class="masthead">
+            <div class="container">
+                <nav>
+                    <ul class="nav nav-justified">
+                        <li class="active"><a href="#">Blog</a></li>
+                        <li><a href="#">About me</a></li>
+                        <li><a href="#">Apps</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>          
+        </div>
+
+        <div class="blog">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 blog-main">
+                        <div class="blog-post">
+                            {% block content %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container footer">
+            <div class="row">
+                <div class="span12">
+                    <p>
+                        Copyright &copy; {% now "Y" %}
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="bower_components/html5-boilerplate/dist/js/vendor/jquery-1.11.3.min.js"><\/script>')</script>
