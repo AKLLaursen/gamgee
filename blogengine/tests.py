@@ -1,3 +1,5 @@
+import markdown
+
 from django.test import TestCase, LiveServerTestCase, Client
 from django.utils import timezone
 from django.utils.encoding import smart_text 
@@ -197,7 +199,7 @@ class PostViewTest(LiveServerTestCase):
 
 		# Sets the attributes of the post
 		post.title = 'Test post'
-		post.text = 'This is a test post for testing.'
+		post.text = 'This is a test [post for testing.](http://127.0.0.1:8000/)'
 		post.pubDate = timezone.now()
 		post.save()
 
@@ -213,9 +215,12 @@ class PostViewTest(LiveServerTestCase):
 		self.assertTrue(post.title in smart_text(response.content))
 
 		# Check that the post text is in the response
-		self.assertTrue(post.title in smart_text(response.content))
+		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
 
 		# Check that the post date is in the response
 		self.assertTrue(str(post.pubDate.year) in smart_text(response.content))
 		self.assertTrue(post.pubDate.strftime('%b') in smart_text(response.content))
 		self.assertTrue(str(post.pubDate.day) in smart_text(response.content))
+
+		# Check the link is marked up properly
+		self.assertTrue('<a href="http://127.0.0.1:8000/">post for testing.</a>' in smart_text(response.content))
