@@ -1,6 +1,6 @@
 {% extends "blogengine/includes/base.html" %}
     
-    {% load customMarkdown %}
+    {% load custom_markdown %}
 
     {% block content %}
         {% for post in object_list %}
@@ -9,9 +9,9 @@
                 {{ post.title }}
             </h2>
             <p class = "blog-post-meta">
-                {{ post.pubDate }}
+                {{ post.pub_date }}
             </p>
-            {{ post.text|customMarkdown }}
+            {{ post.text|custom_markdown }}
         </div>
         {% endfor %}
     {% endblock %}

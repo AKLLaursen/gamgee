@@ -10,9 +10,6 @@ register = template.Library()
 @register.filter(is_safe = True)
 @stringfilter
 # Define custom markdown
-def customMarkdown(value):
+def custom_markdown(value):
 	extensions = ["nl2br", ]
-	return mark_safe(markdown.markdown(force_text(value),
-                                       extensions,
-                                       safe_mode = True,
-                                       enable_attributes = False))
+	return mark_safe(markdown.markdown(force_text(value), extensions, safe_mode = True, enable_attributes = False))

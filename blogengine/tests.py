@@ -8,7 +8,7 @@ from blogengine.models import Post
 # Test for blogpost creation
 class PostTest(TestCase):
 
-	def testCreatePost(self):
+	def test_create_post(self):
 
 		# Creates the post
 		post = Post()
@@ -16,26 +16,26 @@ class PostTest(TestCase):
 		# Sets the attributes of the post
 		post.title = 'Test post'
 		post.text = 'This is a test post for testing.'
-		post.pubDate = timezone.now()
+		post.pub_date = timezone.now()
 
 		# Saves the post
 		post.save()
 
 		# Checks that the post can be found
-		allPosts = Post.objects.all()
-		self.assertEquals(len(allPosts), 1)
-		onlyPost = allPosts[0]
-		self.assertEquals(onlyPost, post)
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+		only_post = all_posts[0]
+		self.assertEquals(only_post, post)
 
 		# Checks the attributes of the post
-		self.assertEquals(onlyPost.title, 'Test post')
-		self.assertEquals(onlyPost.text, 'This is a test post for testing.')
-		self.assertEquals(onlyPost.pubDate.day, post.pubDate.day)
-		self.assertEquals(onlyPost.pubDate.month, post.pubDate.month)
-		self.assertEquals(onlyPost.pubDate.year, post.pubDate.year)
-		self.assertEquals(onlyPost.pubDate.hour, post.pubDate.hour)
-		self.assertEquals(onlyPost.pubDate.minute, post.pubDate.minute)
-		self.assertEquals(onlyPost.pubDate.second, post.pubDate.second)
+		self.assertEquals(only_post.title, 'Test post')
+		self.assertEquals(only_post.text, 'This is a test post for testing.')
+		self.assertEquals(only_post.pub_date.day, post.pub_date.day)
+		self.assertEquals(only_post.pub_date.month, post.pub_date.month)
+		self.assertEquals(only_post.pub_date.year, post.pub_date.year)
+		self.assertEquals(only_post.pub_date.hour, post.pub_date.hour)
+		self.assertEquals(only_post.pub_date.minute, post.pub_date.minute)
+		self.assertEquals(only_post.pub_date.second, post.pub_date.second)
 
 # Test login on the admin page
 class AdminTest(LiveServerTestCase):
@@ -46,10 +46,10 @@ class AdminTest(LiveServerTestCase):
 	fixtures = ['users.json']
 
 	# Set-up client
-	def setUp(self):
+	def set_up(self):
 		self.client = Client()
 
-	def testLogIn(self):
+	def test_log_in(self):
 
 		# Get the login page, note that redirection has to be given explicitly, otherwise a 302 response code is given.
 		response = self.client.get('/admin/', follow = True)
@@ -70,7 +70,7 @@ class AdminTest(LiveServerTestCase):
 		# Check the response text again
 		self.assertTrue('Log out' in smart_text(response.content))
 
-	def testLogOut(self):
+	def test_log_out(self):
 
 		# Log the user in
 		self.client.login(username = 'testuser', password = 'testuserpass')
@@ -92,7 +92,7 @@ class AdminTest(LiveServerTestCase):
 		# Check the response text again
 		self.assertTrue('Log in' in smart_text(response.content))
 
-	def testCreatePost(self):
+	def test_create_post(self):
 
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
@@ -105,8 +105,8 @@ class AdminTest(LiveServerTestCase):
 		response = self.client.post('/admin/blogengine/post/add/', {
 			'title': 'Test post',
 			'text': 'This is a test post for testing.',
-			'pubDate_0': '2015-12-30',
-			'pubDate_1': '12:56:05'
+			'pub_date_0': '2015-12-30',
+			'pub_date_1': '12:56:05'
 			},
 			follow = True)
 		self.assertEquals(response.status_code, 200)
@@ -115,31 +115,31 @@ class AdminTest(LiveServerTestCase):
 		self.assertTrue('added successfully' in smart_text(response.content))
 
 		# Check that the post is now in the database
-		allPosts = Post.objects.all()
-		self.assertEquals(len(allPosts), 1)
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
 
-	def testEditPost(self):
+	def test_edit_post(self):
 
 		# Create the post
 		post = Post()
 		post.title = 'Test post number 1'
 		post.text = 'This is the first test post for testing.'
-		post.pubDate = timezone.now()
+		post.pub_date = timezone.now()
 		post.save()
 
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
 
 		# Get the ID of the post, as this is subject to change
-		allPosts = Post.objects.all()
-		postId = allPosts[0].id
+		all_posts = Post.objects.all()
+		post_id = all_posts[0].id
 
 		# Edit the post
-		response = self.client.post(('/admin/blogengine/post/' + str(postId) + '/change/'), {
+		response = self.client.post(('/admin/blogengine/post/' + str(post_id) + '/change/'), {
 			'title': 'Test post number 2',
 			'text': 'This is the second test post for testing.',
-			'pubDate_0': '2015-12-30',
-			'pubDate_1': '12:56:05'
+			'pub_date_0': '2015-12-30',
+			'pub_date_1': '12:56:05'
         },
         follow = True
         )
@@ -149,13 +149,13 @@ class AdminTest(LiveServerTestCase):
 		self.assertTrue('changed successfully' in smart_text(response.content))
 
 		# Check post amended. Get all post objects again to make sure nothing has changed.
-		allPosts = Post.objects.all()
-		self.assertEquals(len(allPosts), 1)
-		onlyPost = allPosts[0]
-		self.assertEquals(onlyPost.title, 'Test post number 2')
-		self.assertEquals(onlyPost.text, 'This is the second test post for testing.')
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+		only_post = all_posts[0]
+		self.assertEquals(only_post.title, 'Test post number 2')
+		self.assertEquals(only_post.text, 'This is the second test post for testing.')
 
-	def testDeletePost(self):
+	def test_delete_post(self):
 
 		# Creates the post
 		post = Post()
@@ -163,21 +163,21 @@ class AdminTest(LiveServerTestCase):
 		# Sets the attributes of the post
 		post.title = 'Test post'
 		post.text = 'This is a test post for testing.'
-		post.pubDate = timezone.now()
+		post.pub_date = timezone.now()
 		post.save()
 
 		# Check that a new post is saved
-		allPosts = Post.objects.all()
-		self.assertEquals(len(allPosts), 1)
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
 
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
 
 		# Get post ID
-		postId = allPosts[0].id
+		post_id = all_posts[0].id
 
 		# Delete the post
-		response = self.client.post(('/admin/blogengine/post/' + str(postId) + '/delete/'), {
+		response = self.client.post(('/admin/blogengine/post/' + str(post_id) + '/delete/'), {
 			'post': 'yes'
 			}, follow = True)
 		self.assertEquals(response.status_code, 200)
@@ -189,10 +189,10 @@ class AdminTest(LiveServerTestCase):
 class PostViewTest(LiveServerTestCase):
 
 	# Set-up client
-	def setUp(self):
+	def set_up(self):
 		self.client = Client()
 
-	def testIndex(self):
+	def test_index(self):
 
 		#Create a post
 		post = Post()
@@ -200,12 +200,12 @@ class PostViewTest(LiveServerTestCase):
 		# Sets the attributes of the post
 		post.title = 'Test post'
 		post.text = 'This is a test [post for testing.](http://127.0.0.1:8000/)'
-		post.pubDate = timezone.now()
+		post.pub_date = timezone.now()
 		post.save()
 
 		# Check that a new post is saved
-		allPosts = Post.objects.all()
-		self.assertEquals(len(allPosts), 1)
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
 
 		# Get the index
 		response = self.client.get('/', follow = True)
@@ -218,9 +218,9 @@ class PostViewTest(LiveServerTestCase):
 		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
 
 		# Check that the post date is in the response
-		self.assertTrue(str(post.pubDate.year) in smart_text(response.content))
-		self.assertTrue(post.pubDate.strftime('%b') in smart_text(response.content))
-		self.assertTrue(str(post.pubDate.day) in smart_text(response.content))
+		self.assertTrue(str(post.pub_date.year) in smart_text(response.content))
+		self.assertTrue(post.pub_date.strftime('%b') in smart_text(response.content))
+		self.assertTrue(str(post.pub_date.day) in smart_text(response.content))
 
 		# Check the link is marked up properly
 		self.assertTrue('<a href="http://127.0.0.1:8000/">post for testing.</a>' in smart_text(response.content))
