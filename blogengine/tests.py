@@ -17,6 +17,7 @@ class PostTest(TestCase):
 		post.title = 'Test post'
 		post.text = 'This is a test post for testing.'
 		post.pub_date = timezone.now()
+		post.slug = 'test-post'
 
 		# Saves the post
 		post.save()
@@ -36,6 +37,7 @@ class PostTest(TestCase):
 		self.assertEquals(only_post.pub_date.hour, post.pub_date.hour)
 		self.assertEquals(only_post.pub_date.minute, post.pub_date.minute)
 		self.assertEquals(only_post.pub_date.second, post.pub_date.second)
+		self.assertEquals(only_post.slug, 'test-post')
 
 # Test login on the admin page
 class AdminTest(LiveServerTestCase):
@@ -106,7 +108,8 @@ class AdminTest(LiveServerTestCase):
 			'title': 'Test post',
 			'text': 'This is a test post for testing.',
 			'pub_date_0': '2015-12-30',
-			'pub_date_1': '12:56:05'
+			'pub_date_1': '12:56:05',
+			'slug': 'test-post'
 			},
 			follow = True)
 		self.assertEquals(response.status_code, 200)
@@ -125,6 +128,8 @@ class AdminTest(LiveServerTestCase):
 		post.title = 'Test post number 1'
 		post.text = 'This is the first test post for testing.'
 		post.pub_date = timezone.now()
+		post.slug = 'test-post-number-1'
+
 		post.save()
 
 		# Log in
@@ -139,7 +144,8 @@ class AdminTest(LiveServerTestCase):
 			'title': 'Test post number 2',
 			'text': 'This is the second test post for testing.',
 			'pub_date_0': '2015-12-30',
-			'pub_date_1': '12:56:05'
+			'pub_date_1': '12:56:05',
+			'slug': 'test-post-number-2'
         },
         follow = True
         )
@@ -163,7 +169,9 @@ class AdminTest(LiveServerTestCase):
 		# Sets the attributes of the post
 		post.title = 'Test post'
 		post.text = 'This is a test post for testing.'
+		post.slug = 'test-post'
 		post.pub_date = timezone.now()
+
 		post.save()
 
 		# Check that a new post is saved
@@ -201,6 +209,8 @@ class PostViewTest(LiveServerTestCase):
 		post.title = 'Test post'
 		post.text = 'This is a test [post for testing.](http://127.0.0.1:8000/)'
 		post.pub_date = timezone.now()
+		post.slug = 'test-post'
+
 		post.save()
 
 		# Check that a new post is saved
@@ -224,3 +234,43 @@ class PostViewTest(LiveServerTestCase):
 
 		# Check the link is marked up properly
 		self.assertTrue('<a href="http://127.0.0.1:8000/">post for testing.</a>' in smart_text(response.content))
+
+	def test_post_page(self):
+
+		# Create a post
+		post = Post()
+
+		# Ammend to post
+		post.title = 'Another first post'
+		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
+		post.pub_date = timezone.now()
+		post.slug = 'another-first-post'
+
+		post.save()
+
+		# Confirm that a new post has been saved
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+		only_post = all_posts[0]
+		self.assertEquals(only_post, post)
+
+		# Get the URL of the post
+		post_url = only_post.get_abs_url()
+
+		# Fetch the post
+		response = self.client.get(post_url, follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the post title is in the reponse
+		self.assertTrue(post.title in smart_text(response.content))
+
+		# Check that the post text is in the response
+		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
+
+		# Check that the post date is in the response
+		self.assertTrue(str(post.pub_date.year) in smart_text(response.content))
+		self.assertTrue(post.pub_date.strftime('%b') in smart_text(response.content))
+		self.assertTrue(str(post.pub_date.day) in smart_text(response.content))
+
+		# Check the link is marked up properly
+		self.assertTrue('<a href="http://127.0.0.1:8000/">for a blog.</a>' in smart_text(response.content))
