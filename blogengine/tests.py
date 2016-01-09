@@ -6,19 +6,25 @@ from django.utils.encoding import smart_text
 from blogengine.models import Post
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
+from django.contrib.auth.models import User
 
 # Test for blogpost creation
 class PostTest(TestCase):
 
 	def test_create_post(self):
 
+		# Create a blog author
+		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
+		author.save
+
 		# Creates the post
 		post = Post()
 
 		# Sets the attributes of the post
 		post.title = 'Test post'
-		post.text = 'This is a test post for testing.'
+		post.author = author
 		post.pub_date = timezone.now()
+		post.text = 'This is a test post for testing.'
 		post.slug = 'test-post'
 
 		# Saves the post
@@ -32,13 +38,15 @@ class PostTest(TestCase):
 
 		# Checks the attributes of the post
 		self.assertEquals(only_post.title, 'Test post')
-		self.assertEquals(only_post.text, 'This is a test post for testing.')
+		self.assertEquals(only_post.author.username, 'TestUser')
+		self.assertEquals(only_post.author.email, 'test@user.com')
 		self.assertEquals(only_post.pub_date.day, post.pub_date.day)
 		self.assertEquals(only_post.pub_date.month, post.pub_date.month)
 		self.assertEquals(only_post.pub_date.year, post.pub_date.year)
 		self.assertEquals(only_post.pub_date.hour, post.pub_date.hour)
 		self.assertEquals(only_post.pub_date.minute, post.pub_date.minute)
 		self.assertEquals(only_post.pub_date.second, post.pub_date.second)
+		self.assertEquals(only_post.text, 'This is a test post for testing.')
 		self.assertEquals(only_post.slug, 'test-post')
 
 # Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
@@ -124,11 +132,16 @@ class AdminTest(BaseAcceptanceTest):
 
 	def test_edit_post(self):
 
+		# Create a blog author
+		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
+		author.save
+
 		# Create the post
 		post = Post()
 		post.title = 'Test post number 1'
-		post.text = 'This is the first test post for testing.'
+		post.author = author
 		post.pub_date = timezone.now()
+		post.text = 'This is the first test post for testing.'
 		post.slug = 'test-post-number-1'
 
 		post.save()
@@ -164,14 +177,19 @@ class AdminTest(BaseAcceptanceTest):
 
 	def test_delete_post(self):
 
+		# Create a blog author
+		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
+		author.save
+
 		# Creates the post
 		post = Post()
 
 		# Sets the attributes of the post
 		post.title = 'Test post'
+		post.author = author
+		post.pub_date = timezone.now()
 		post.text = 'This is a test post for testing.'
 		post.slug = 'test-post'
-		post.pub_date = timezone.now()
 
 		post.save()
 
@@ -198,14 +216,18 @@ class AdminTest(BaseAcceptanceTest):
 class PostViewTest(BaseAcceptanceTest):
 
 	def test_index(self):
+		# Create a blog author
+		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
+		author.save
 
 		#Create a post
 		post = Post()
 
 		# Sets the attributes of the post
 		post.title = 'Test post'
-		post.text = 'This is a test [post for testing.](http://127.0.0.1:8000/)'
+		post.author = author
 		post.pub_date = timezone.now()
+		post.text = 'This is a test [post for testing.](http://127.0.0.1:8000/)'
 		post.slug = 'test-post'
 
 		post.save()
@@ -234,13 +256,18 @@ class PostViewTest(BaseAcceptanceTest):
 
 	def test_post_page(self):
 
+		# Create a blog author
+		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
+		author.save
+
 		# Create a post
 		post = Post()
 
 		# Ammend to post
 		post.title = 'Another first post'
-		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
+		post.author = author
 		post.pub_date = timezone.now()
+		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
 		post.slug = 'another-first-post'
 
 		post.save()
