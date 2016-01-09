@@ -7,7 +7,7 @@
     {% for post in object_list %}
       <div class = "blog-post">
         <h2 class = "blog-post-title">
-          <a href = "post.get_abs_url }}">
+          <a href = "{{ post.get_abs_url }}">
             {{ post.title }}
           </a>
         </h2>
