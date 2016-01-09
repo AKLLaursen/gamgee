@@ -4,6 +4,8 @@ from django.test import TestCase, LiveServerTestCase, Client
 from django.utils import timezone
 from django.utils.encoding import smart_text 
 from blogengine.models import Post
+from django.contrib.flatpages.models import FlatPage
+from django.contrib.sites.models import Site
 
 # Test for blogpost creation
 class PostTest(TestCase):
@@ -39,17 +41,16 @@ class PostTest(TestCase):
 		self.assertEquals(only_post.pub_date.second, post.pub_date.second)
 		self.assertEquals(only_post.slug, 'test-post')
 
-# Test login on the admin page
-class AdminTest(LiveServerTestCase):
+# Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
+class BaseAcceptanceTest(LiveServerTestCase):
+	def set_up(self):
+		self.client = Client()
 
-	# Known bug: Id increments seem quite random. May have to fix this.
+# Test login on the admin page
+class AdminTest(BaseAcceptanceTest):
 
 	# Load fixtures
 	fixtures = ['users.json']
-
-	# Set-up client
-	def set_up(self):
-		self.client = Client()
 
 	def test_log_in(self):
 
@@ -194,11 +195,7 @@ class AdminTest(LiveServerTestCase):
 		self.assertTrue('deleted successfully' in smart_text(response.content))
 
 # Test for Views
-class PostViewTest(LiveServerTestCase):
-
-	# Set-up client
-	def set_up(self):
-		self.client = Client()
+class PostViewTest(BaseAcceptanceTest):
 
 	def test_index(self):
 
