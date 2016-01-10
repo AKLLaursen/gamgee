@@ -12,7 +12,7 @@ class Category(models.Model):
 	def save(self):
 
 		if not self.slug:
-			self.slug = slugify(self.name)
+			self.slug = slugify(str(self.name))
 
 		super(Category, self).save()
 
