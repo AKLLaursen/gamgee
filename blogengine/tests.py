@@ -407,6 +407,9 @@ class PostViewTest(BaseAcceptanceTest):
 		# Check that the post title is in the reponse
 		self.assertTrue(post.title in smart_text(response.content))
 
+		# Check the post category is in the response
+		self.assertTrue(post.category.name in smart_text(response.content))
+
 		# Check that the post text is in the response
 		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
 
@@ -460,6 +463,66 @@ class PostViewTest(BaseAcceptanceTest):
 
 		# Check that the post title is in the reponse
 		self.assertTrue(post.title in smart_text(response.content))
+
+		# Check that the post text is in the response
+		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
+
+		# Check that the post text is in the response
+		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
+
+		# Check that the post date is in the response
+		self.assertTrue(str(post.pub_date.year) in smart_text(response.content))
+		self.assertTrue(post.pub_date.strftime('%b') in smart_text(response.content))
+		self.assertTrue(str(post.pub_date.day) in smart_text(response.content))
+
+		# Check the link is marked up properly
+		self.assertTrue('<a href="http://127.0.0.1:8000/">for a blog.</a>' in smart_text(response.content))
+
+	def test_category_page(self):
+
+		# Create the category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
+
+		# Create a blog author
+		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
+
+		author.save()
+
+		# Create a post
+		post = Post()
+
+		# Ammend to post
+		post.title = 'Another first post'
+		post.author = author
+		post.category = category
+		post.pub_date = timezone.now()
+		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
+		post.slug = 'another-first-post'
+
+		post.save()
+
+		# Confirm that a new post has been saved
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+		only_post = all_posts[0]
+		self.assertEquals(only_post, post)
+
+		# Get the category URL
+		category_url = post.category.get_absolute_url()
+
+		# Fetch the category
+		response = self.client.get(category_url, follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the categeory name is in the reponse
+		self.assertTrue(category.name in smart_text(response.content))
+
+		# Check that the post text is in the response
+		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
 
 		# Check that the post text is in the response
 		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
