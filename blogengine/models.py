@@ -1,12 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# Category creation
+class Category(models.Model):
+
+	name = models.CharField(max_length = 200)
+	description = models.TextField()
+
+	def __unicode__(self):
+		return self.name
+
+	class Meta:
+		verbose_name_plural = 'categories'
+
 # Blogpost creation
 class Post(models.Model):
 
 	# Model specifications
 	title = models.CharField(max_length = 200)
 	author = models.ForeignKey(User)
+	category = models.ForeignKey(Category, blank = True, null = True)
 	pub_date = models.DateTimeField()
 	text = models.TextField()
 	slug = models.SlugField(max_length = 40, unique = True)

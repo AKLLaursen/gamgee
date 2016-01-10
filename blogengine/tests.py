@@ -3,7 +3,7 @@ import markdown
 from django.test import TestCase, LiveServerTestCase, Client
 from django.utils import timezone
 from django.utils.encoding import smart_text 
-from blogengine.models import Post
+from blogengine.models import Post, Category
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
@@ -11,7 +11,36 @@ from django.contrib.auth.models import User
 # Test for blogpost creation
 class PostTest(TestCase):
 
+	def test_create_category(self):
+
+		# Create the category
+		category = Category()
+
+		# Add attributes
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		# Save the category
+		category.save()
+
+		# Check that the category can be found
+		all_categories = Category.objects.all()
+		self.assertEquals(len(all_categories), 1)
+		only_category = all_categories[0]
+		self.assertEquals(only_category, category)
+
+		# Checks the attributes of the category
+		self.assertEquals(only_category.name, 'Data Science - Test')
+		self.assertEquals(only_category.description, 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.')
+
 	def test_create_post(self):
+
+		# Create a category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
 
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
@@ -24,6 +53,7 @@ class PostTest(TestCase):
 		post.title = 'Test post'
 		post.author = author
 		post.pub_date = timezone.now()
+		post.category = category
 		post.text = 'This is a test post for testing.'
 		post.slug = 'test-post'
 
@@ -46,6 +76,8 @@ class PostTest(TestCase):
 		self.assertEquals(only_post.pub_date.hour, post.pub_date.hour)
 		self.assertEquals(only_post.pub_date.minute, post.pub_date.minute)
 		self.assertEquals(only_post.pub_date.second, post.pub_date.second)
+		self.assertEquals(only_post.category.name, 'Data Science - Test')
+		self.assertEquals(only_post.category.description, 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.')
 		self.assertEquals(only_post.text, 'This is a test post for testing.')
 		self.assertEquals(only_post.slug, 'test-post')
 
@@ -103,7 +135,102 @@ class AdminTest(BaseAcceptanceTest):
 		# Check the response text again
 		self.assertTrue('Log in' in smart_text(response.content))
 
+	def test_create_category(self):
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Check the response code
+		response = self.client.get('/admin/blogengine/category/add/')
+		self.assertEquals(response.status_code, 200)
+
+		# Create the new category
+		response = self.client.post('/admin/blogengine/category/add/', {
+			'name': 'Data Science - Test',
+			'description': 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+			},
+			follow = True
+			)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the category is added successfully
+		self.assertTrue('added successfully' in smart_text(response.content))
+
+		# Check that the new category is now in the database
+		all_categories = Category.objects.all()
+		self.assertEquals(len(all_categories), 1)
+
+	def test_edit_category(self):
+
+		# Create the category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Get the ID of the category, as this is subject to change
+		all_categories = Category.objects.all()
+		category_id = all_categories[0].id
+
+		# Edit the category
+		response = self.client.post('/admin/blogengine/category/' + str(category_id) + '/change/', {
+			'name': 'R',
+			'description': 'The R programming language'
+			},
+			follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the category is changed successfully
+		self.assertTrue('changed successfully' in smart_text(response.content))
+
+		# Check that the category is amended
+		all_categories = Category.objects.all()
+		self.assertEquals(len(all_categories), 1)
+		only_category = all_categories[0]
+		self.assertEquals(only_category.name, 'R')
+		self.assertEquals(only_category.description, 'The R programming language')
+
+	def test_delete_category(self):
+
+		# Create the category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Get the ID of the category, as this is subject to change
+		all_categories = Category.objects.all()
+		category_id = all_categories[0].id
+
+		# Delete the category
+		response = self.client.post('/admin/blogengine/category/' + str(category_id) + '/delete/', {
+			'post': 'yes'
+			}, follow=True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the category is deleted successfully
+		self.assertTrue('deleted successfully' in smart_text(response.content))
+
+		# Check category deleted
+		all_categories = Category.objects.all()
+		self.assertEquals(len(all_categories), 0)
+
 	def test_create_post(self):
+
+		# Create the category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
 
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
@@ -112,13 +239,18 @@ class AdminTest(BaseAcceptanceTest):
 		response = self.client.get('/admin/blogengine/post/add/', follow = True)
 		self.assertEquals(response.status_code, 200)
 
+		# Get the category ID
+		all_categories = Category.objects.all()
+		category_id = all_categories[0].id
+
 		# Create a test post
 		response = self.client.post('/admin/blogengine/post/add/', {
 			'title': 'Test post',
 			'text': 'This is a test post for testing.',
 			'pub_date_0': '2015-12-30',
 			'pub_date_1': '12:56:05',
-			'slug': 'test-post'
+			'slug': 'test-post',
+			'category': str(category_id)
 			},
 			follow = True)
 		self.assertEquals(response.status_code, 200)
@@ -132,9 +264,17 @@ class AdminTest(BaseAcceptanceTest):
 
 	def test_edit_post(self):
 
+		# Create the category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
+
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-		author.save
+
+		author.save()
 
 		# Create the post
 		post = Post()
@@ -153,13 +293,18 @@ class AdminTest(BaseAcceptanceTest):
 		all_posts = Post.objects.all()
 		post_id = all_posts[0].id
 
+		# Get the category ID
+		all_categories = Category.objects.all()
+		category_id = all_categories[0].id
+
 		# Edit the post
 		response = self.client.post(('/admin/blogengine/post/' + str(post_id) + '/change/'), {
 			'title': 'Test post number 2',
 			'text': 'This is the second test post for testing.',
 			'pub_date_0': '2015-12-30',
 			'pub_date_1': '12:56:05',
-			'slug': 'test-post-number-2'
+			'slug': 'test-post-number-2',
+			'category': str(category_id)
         },
         follow = True
         )
@@ -177,9 +322,17 @@ class AdminTest(BaseAcceptanceTest):
 
 	def test_delete_post(self):
 
+		# Create the category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
+
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-		author.save
+
+		author.save()
 
 		# Creates the post
 		post = Post()
@@ -187,6 +340,7 @@ class AdminTest(BaseAcceptanceTest):
 		# Sets the attributes of the post
 		post.title = 'Test post'
 		post.author = author
+		post.category = category
 		post.pub_date = timezone.now()
 		post.text = 'This is a test post for testing.'
 		post.slug = 'test-post'
@@ -216,9 +370,18 @@ class AdminTest(BaseAcceptanceTest):
 class PostViewTest(BaseAcceptanceTest):
 
 	def test_index(self):
+
+		# Create the category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
+
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-		author.save
+
+		author.save()
 
 		#Create a post
 		post = Post()
@@ -226,6 +389,7 @@ class PostViewTest(BaseAcceptanceTest):
 		# Sets the attributes of the post
 		post.title = 'Test post'
 		post.author = author
+		post.category = category
 		post.pub_date = timezone.now()
 		post.text = 'This is a test [post for testing.](http://127.0.0.1:8000/)'
 		post.slug = 'test-post'
@@ -256,9 +420,17 @@ class PostViewTest(BaseAcceptanceTest):
 
 	def test_post_page(self):
 
+		# Create the category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
+
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-		author.save
+
+		author.save()
 
 		# Create a post
 		post = Post()
@@ -266,6 +438,7 @@ class PostViewTest(BaseAcceptanceTest):
 		# Ammend to post
 		post.title = 'Another first post'
 		post.author = author
+		post.category = category
 		post.pub_date = timezone.now()
 		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
 		post.slug = 'another-first-post'
