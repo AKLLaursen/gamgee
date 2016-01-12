@@ -1,7 +1,8 @@
 from django.conf.urls import url
 from django.views.generic import ListView, DetailView
+from django.contrib.syndication.views import Feed
 from blogengine.models import Category, Tag, Post
-from blogengine.views import CategoryListView, TagListView
+from blogengine.views import CategoryListView, TagListView, PostsFeed
 
 # Note that patterns has been deprecated since 1.8.
 
@@ -26,4 +27,8 @@ urlpatterns = [
 			paginate_by = 5,
 			model = Tag,
 			)),
+
+		# Post RSS feed
+		url(r'^feeds/posts/$', PostsFeed()),
+
 ]

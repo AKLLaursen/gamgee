@@ -1,4 +1,5 @@
 import markdown
+import feedparser
 
 from django.test import TestCase, LiveServerTestCase, Client
 from django.utils import timezone
@@ -645,7 +646,7 @@ class PostViewTest(BaseAcceptanceTest):
 		self.assertEquals(only_post, post)
 
 		# Get the URL of the post
-		post_url = only_post.get_abs_url()
+		post_url = only_post.get_absolute_url()
 
 		# Fetch the post
 		response = self.client.get(post_url, follow = True)
@@ -784,6 +785,67 @@ class PostViewTest(BaseAcceptanceTest):
 
 		# Check the link is marked up properly
 		self.assertTrue('<a href="http://127.0.0.1:8000/">for a blog.</a>' in smart_text(response.content))
+
+
+class FeedTest(BaseAcceptanceTest):
+
+	def test_all_post_feed(self):
+
+		# Create the category
+		category = Category()
+		category.name = 'Data Science - Test'
+		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+
+		category.save()
+
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		tag.save()
+
+		# Create a blog author
+		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
+
+		author.save()
+
+		# Create a post
+		post = Post()
+
+		# Ammend to post
+		post.title = 'Another first post'
+		post.author = author
+		post.category = category
+		post.pub_date = timezone.now()
+		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
+		post.slug = 'another-first-post'
+
+		post.save()
+
+		post.tags.add(tag)
+		post.save()
+
+		# Check we can find it
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+		only_post = all_posts[0]
+		self.assertEquals(only_post, post)
+
+		# Fetch the feed
+		response = self.client.get('/feeds/posts/', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Parse the feed
+		feed = feedparser.parse(smart_text(response.content))
+
+		# Check length
+		self.assertEquals(len(feed.entries), 1)
+
+		# Check post retrieved is the correct one
+		feed_post = feed.entries[0]
+		self.assertEquals(feed_post.title, post.title)
+		self.assertEquals(feed_post.description, post.text)
 
 # Test for flat pages
 class FlatPageViewTest(BaseAcceptanceTest):
