@@ -3,7 +3,7 @@ import markdown
 from django.test import TestCase, LiveServerTestCase, Client
 from django.utils import timezone
 from django.utils.encoding import smart_text 
-from blogengine.models import Post, Category
+from blogengine.models import Post, Category, Tag
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
@@ -33,6 +33,29 @@ class PostTest(TestCase):
 		self.assertEquals(only_category.name, 'Data Science - Test')
 		self.assertEquals(only_category.description, 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.')
 
+	def test_create_tag(self):
+
+		# Create the tag
+		tag = Tag()
+
+		# Add attributes
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		# Save the tag
+
+		tag.save()
+
+		# Check that the tag can be found
+		all_tags = Tag.objects.all()
+		self.assertEquals(len(all_tags), 1)
+		only_tag = all_tags[0]
+		self.assertEquals(only_tag, tag)
+
+		# Check the attributes of the tag
+		self.assertEquals(only_tag.name, 'R')
+		self.assertEquals(only_tag.description, 'The R programming language')
+
 	def test_create_post(self):
 
 		# Create a category
@@ -42,9 +65,15 @@ class PostTest(TestCase):
 
 		category.save()
 
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+		tag.save()
+
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-		author.save
+		author.save()
 
 		# Creates the post
 		post = Post()
@@ -58,6 +87,10 @@ class PostTest(TestCase):
 		post.slug = 'test-post'
 
 		# Saves the post
+		post.save()
+
+		# Add the tag
+		post.tags.add(tag)
 		post.save()
 
 		# Checks that the post can be found
@@ -80,6 +113,15 @@ class PostTest(TestCase):
 		self.assertEquals(only_post.category.description, 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.')
 		self.assertEquals(only_post.text, 'This is a test post for testing.')
 		self.assertEquals(only_post.slug, 'test-post')
+
+		# Check tags
+		post_tags = only_post.tags.all()
+		self.assertEquals(len(post_tags), 1)
+		only_post_tag = post_tags[0]
+		self.assertEquals(only_post_tag, tag)
+		self.assertEquals(only_post_tag.name, 'R')
+		self.assertEquals(only_post_tag.description, 'The R programming language')
+
 
 # Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
 class BaseAcceptanceTest(LiveServerTestCase):
@@ -219,9 +261,96 @@ class AdminTest(BaseAcceptanceTest):
 		# Check that the category is deleted successfully
 		self.assertTrue('deleted successfully' in smart_text(response.content))
 
-		# Check category deleted
+		# Check that the category is deleted
 		all_categories = Category.objects.all()
 		self.assertEquals(len(all_categories), 0)
+
+	def test_create_tag(self):
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Check the response code
+		response = self.client.get('/admin/blogengine/tag/add/', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Create the new tag
+		response = self.client.post('/admin/blogengine/tag/add/', {
+			'name': 'R',
+			'description': 'The R programming language'
+			},
+			follow = True
+			)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the tag was added successfully
+		self.assertTrue('added successfully' in smart_text(response.content))
+
+		# Check that the new tag is now in the database
+		all_tags = Tag.objects.all()
+		self.assertEquals(len(all_tags), 1)
+
+	def test_edit_tag(self):
+
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The Python programming language'
+
+		tag.save()
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Get the ID of the tag, as this is subject to change
+		all_tags = Tag.objects.all()
+		tag_id = all_tags[0].id
+
+		# Edit the tag
+		response = self.client.post('/admin/blogengine/tag/' + str(tag_id) + '/change/', {
+			'name': 'Python',
+			'description': 'The Python programming language'
+			}, follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the tag has changed successfully
+		self.assertTrue('changed successfully' in smart_text(response.content))
+
+		# Check that the tag is amended
+		all_tags = Tag.objects.all()
+		self.assertEquals(len(all_tags), 1)
+		only_tag = all_tags[0]
+		self.assertEquals(only_tag.name, 'Python')
+		self.assertEquals(only_tag.description, 'The Python programming language')
+
+	def test_delete_tag(self):
+
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		tag.save()
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Get the ID of the tag, as this is subject to change
+		all_tags = Tag.objects.all()
+		tag_id = all_tags[0].id
+
+		# Delete the tag
+		response = self.client.post('/admin/blogengine/tag/' + str(tag_id) + '/delete/', {
+			'post': 'yes'
+			}, follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the tag was deleted successfully
+		self.assertTrue('deleted successfully' in smart_text(response.content))
+
+		# Check that the tag is deleted
+		all_tags = Tag.objects.all()
+		self.assertEquals(len(all_tags), 0)
 
 	def test_create_post(self):
 
@@ -231,6 +360,13 @@ class AdminTest(BaseAcceptanceTest):
 		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
 
 		category.save()
+
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		tag.save()
 
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
@@ -243,6 +379,10 @@ class AdminTest(BaseAcceptanceTest):
 		all_categories = Category.objects.all()
 		category_id = all_categories[0].id
 
+		# Get the tag ID
+		all_tags = Tag.objects.all()
+		tag_id = all_tags[0].id
+
 		# Create a test post
 		response = self.client.post('/admin/blogengine/post/add/', {
 			'title': 'Test post',
@@ -250,7 +390,8 @@ class AdminTest(BaseAcceptanceTest):
 			'pub_date_0': '2015-12-30',
 			'pub_date_1': '12:56:05',
 			'slug': 'test-post',
-			'category': str(category_id)
+			'category': str(category_id),
+			'tags': str(tag_id)
 			},
 			follow = True)
 		self.assertEquals(response.status_code, 200)
@@ -271,6 +412,13 @@ class AdminTest(BaseAcceptanceTest):
 
 		category.save()
 
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		tag.save()
+
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
 
@@ -286,6 +434,9 @@ class AdminTest(BaseAcceptanceTest):
 
 		post.save()
 
+		post.tags.add(tag)
+		post.save()
+
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
 
@@ -297,6 +448,10 @@ class AdminTest(BaseAcceptanceTest):
 		all_categories = Category.objects.all()
 		category_id = all_categories[0].id
 
+		# Get the tag ID
+		all_tags = Tag.objects.all()
+		tag_id = all_tags[0].id
+
 		# Edit the post
 		response = self.client.post(('/admin/blogengine/post/' + str(post_id) + '/change/'), {
 			'title': 'Test post number 2',
@@ -304,10 +459,11 @@ class AdminTest(BaseAcceptanceTest):
 			'pub_date_0': '2015-12-30',
 			'pub_date_1': '12:56:05',
 			'slug': 'test-post-number-2',
-			'category': str(category_id)
-        },
-        follow = True
-        )
+			'category': str(category_id),
+			'tags': str(tag_id)
+			},
+			follow = True
+			)
 		self.assertEquals(response.status_code, 200)
 
 		# Check that the changes were successfull
@@ -329,6 +485,13 @@ class AdminTest(BaseAcceptanceTest):
 
 		category.save()
 
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		tag.save()
+
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
 
@@ -345,6 +508,9 @@ class AdminTest(BaseAcceptanceTest):
 		post.text = 'This is a test post for testing.'
 		post.slug = 'test-post'
 
+		post.save()
+
+		post.tags.add(tag)
 		post.save()
 
 		# Check that a new post is saved

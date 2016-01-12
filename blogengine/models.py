@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 
-# Category creation
+# Category model
 class Category(models.Model):
 
 	name = models.CharField(max_length = 200)
@@ -25,13 +25,34 @@ class Category(models.Model):
 	class Meta:
 		verbose_name_plural = 'categories'
 
-# Blogpost creation
+# Tag model
+class Tag(models.Model):
+
+	name = models.CharField(max_length = 200)
+	description = models.TextField()
+	slug = models.SlugField(max_length = 40, unique = True, blank = True, null = True)
+
+	def save(self):
+
+		if not self.slug:
+			self.slug = slugify(str(self.name))
+
+		super(Tag, self).save()
+
+	def get_absolute_url(self):
+		return "/tag/%s/" % (self.slug)
+
+	def __unicode__(self):
+		return self.name
+
+# Blogpost model
 class Post(models.Model):
 
 	# Model specifications
 	title = models.CharField(max_length = 200)
 	author = models.ForeignKey(User)
 	category = models.ForeignKey(Category, blank = True, null = True)
+	tags = models.ManyToManyField(Tag)
 	pub_date = models.DateTimeField()
 	text = models.TextField()
 	slug = models.SlugField(max_length = 40, unique = True)
