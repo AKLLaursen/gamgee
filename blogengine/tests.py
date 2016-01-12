@@ -544,6 +544,13 @@ class PostViewTest(BaseAcceptanceTest):
 
 		category.save()
 
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		tag.save()
+
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
 
@@ -562,6 +569,9 @@ class PostViewTest(BaseAcceptanceTest):
 
 		post.save()
 
+		post.tags.add(tag)
+		post.save()
+
 		# Check that a new post is saved
 		all_posts = Post.objects.all()
 		self.assertEquals(len(all_posts), 1)
@@ -575,6 +585,10 @@ class PostViewTest(BaseAcceptanceTest):
 
 		# Check the post category is in the response
 		self.assertTrue(post.category.name in smart_text(response.content))
+
+		# Check the post tag is in the response
+		post_tag = all_posts[0].tags.all()[0]
+		self.assertTrue(post_tag.name in smart_text(response.content))
 
 		# Check that the post text is in the response
 		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
@@ -596,6 +610,13 @@ class PostViewTest(BaseAcceptanceTest):
 
 		category.save()
 
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		tag.save()
+
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
 
@@ -612,6 +633,9 @@ class PostViewTest(BaseAcceptanceTest):
 		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
 		post.slug = 'another-first-post'
 
+		post.save()
+
+		post.tags.add(tag)
 		post.save()
 
 		# Confirm that a new post has been saved
@@ -633,8 +657,12 @@ class PostViewTest(BaseAcceptanceTest):
 		# Check that the post text is in the response
 		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
 
-		# Check that the post text is in the response
-		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
+		# Check the post category is in the response
+		self.assertTrue(post.category.name in smart_text(response.content))
+
+		# Check the post tag is in the response
+		post_tag = all_posts[0].tags.all()[0]
+		self.assertTrue(post_tag.name in smart_text(response.content))
 
 		# Check that the post date is in the response
 		self.assertTrue(str(post.pub_date.year) in smart_text(response.content))
@@ -694,6 +722,62 @@ class PostViewTest(BaseAcceptanceTest):
 		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
 
 		# Check that the post date is in the response
+		self.assertTrue(str(post.pub_date.year) in smart_text(response.content))
+		self.assertTrue(post.pub_date.strftime('%b') in smart_text(response.content))
+		self.assertTrue(str(post.pub_date.day) in smart_text(response.content))
+
+		# Check the link is marked up properly
+		self.assertTrue('<a href="http://127.0.0.1:8000/">for a blog.</a>' in smart_text(response.content))
+
+	def test_tag_page(self):
+
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		tag.save()
+
+		# Create a blog author
+		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
+
+		author.save()
+
+		# Create the post
+		post = Post()
+
+		# Ammend to post
+		post.title = 'Another first post'
+		post.author = author
+		post.pub_date = timezone.now()
+		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
+		post.slug = 'another-first-post'
+
+		post.save()
+
+		post.tags.add(tag)
+		post.save()
+
+		# Check new post saved
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+		only_post = all_posts[0]
+		self.assertEquals(only_post, post)
+
+		# Get the tag URL
+		tag_url = post.tags.all()[0].get_absolute_url()
+
+		# Fetch the tag
+		response = self.client.get(tag_url, follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check the tag name is in the response
+		self.assertTrue(post.tags.all()[0].name in smart_text(response.content))
+
+		# Check the post text is in the response
+		self.assertTrue(markdown.markdown(post.text) in smart_text(response.content))
+
+		# Check the post date is in the response
 		self.assertTrue(str(post.pub_date.year) in smart_text(response.content))
 		self.assertTrue(post.pub_date.strftime('%b') in smart_text(response.content))
 		self.assertTrue(str(post.pub_date.day) in smart_text(response.content))

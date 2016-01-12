@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.views.generic import ListView, DetailView
-from blogengine.models import Category, Post
-from blogengine.views import CategoryListView
+from blogengine.models import Category, Tag, Post
+from blogengine.views import CategoryListView, TagListView
 
 # Note that patterns has been deprecated since 1.8.
 
@@ -19,5 +19,11 @@ urlpatterns = [
 		url(r'^category/(?P<slug>[a-zA-Z0-9-]+)/?$', CategoryListView.as_view(
 			paginate_by = 5,
 			model = Category,
+			)),
+
+		# Tags
+		url(r'^tag/(?P<slug>[a-zA-Z0-9-]+)/?$', TagListView.as_view(
+			paginate_by = 5,
+			model = Tag,
 			)),
 ]
