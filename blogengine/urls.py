@@ -1,6 +1,5 @@
 from django.conf.urls import url
 from django.views.generic import ListView, DetailView
-from django.contrib.syndication.views import Feed
 from blogengine.models import Category, Tag, Post
 from blogengine.views import CategoryListView, TagListView, PostsFeed
 
