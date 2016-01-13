@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django.contrib.syndication',
+    'django_jenkins',
 ]
 
 SITE_ID = 1
@@ -127,9 +128,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-INSTALLED_APPS += ('django_jenkins',)
 JENKINS_TASKS = (
     'django_jenkins.tasks.run_pylint',
-    'django_jenkins.tasks.with_coverage',
 )
 PROJECT_APPS = ['blogengine']
