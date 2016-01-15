@@ -1,13 +1,18 @@
 import markdown
 import feedparser
 
-from django.test import TestCase, LiveServerTestCase, Client
+from django.test import TestCase, Client, LiveServerTestCase
 from django.utils import timezone
 from django.utils.encoding import smart_text 
 from blogengine.models import Post, Category, Tag
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
+
+# Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
+class BaseAcceptanceTest(LiveServerTestCase):
+	def setUp(self):
+		self.client = Client()
 
 # Test for blogpost creation
 class PostTest(TestCase):
@@ -129,12 +134,6 @@ class PostTest(TestCase):
 		self.assertEquals(only_post_tag, tag)
 		self.assertEquals(only_post_tag.name, 'R')
 		self.assertEquals(only_post_tag.description, 'The R programming language')
-
-
-# Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
-class BaseAcceptanceTest(LiveServerTestCase):
-	def set_up(self):
-		self.client = Client()
 
 # Test login on the admin page
 class AdminTest(BaseAcceptanceTest):
