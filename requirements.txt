@@ -3,6 +3,7 @@ Markdown==2.6.5
 astroid==1.4.3
 colorama==0.3.6
 coverage==4.0.3
+dj-database-url==0.3.0
 django-jenkins==0.18.1
 feedparser==5.2.1
 gunicorn==19.4.3
