@@ -1,8 +1,14 @@
-Django==1.9
+Django==1.9.1
 Markdown==2.6.5
+astroid==1.4.3
+colorama==0.3.6
 coverage==4.0.3
 django-jenkins==0.18.1
 feedparser==5.2.1
 gunicorn==19.4.3
+lazy-object-proxy==1.2.1
 psycopg2==2.6.1
+pylint==1.5.3
+six==1.10.0
 static3==0.6.1
+wrapt==1.10.6
