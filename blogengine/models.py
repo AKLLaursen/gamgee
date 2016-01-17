@@ -52,7 +52,7 @@ class Post(models.Model):
 	title = models.CharField(max_length = 200)
 	author = models.ForeignKey(User)
 	category = models.ForeignKey(Category, blank = True, null = True)
-	tags = models.ManyToManyField(Tag)
+	tags = models.ManyToManyField(Tag,  blank = True, null = True)
 	pub_date = models.DateTimeField()
 	text = models.TextField()
 	slug = models.SlugField(max_length = 40, unique = True)
