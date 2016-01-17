@@ -579,6 +579,46 @@ class AdminTest(BaseAcceptanceTest):
 		all_posts = Post.objects.all()
 		self.assertEquals(len(all_posts), 1)
 
+	def test_create_post_without_categorys(self):
+
+		# Create the tag
+		tag = Tag()
+		tag.name = 'R'
+		tag.description = 'The R programming language'
+
+		tag.save()
+
+		# Log in
+		self.client.login(username = 'testuser', password = 'testuserpass')
+
+		# Check the response code
+		response = self.client.get('/admin/blogengine/post/add/')
+		self.assertEquals(response.status_code, 200)
+
+		# Get the tag ID
+		all_tags = Tag.objects.all()
+		tag_id = all_tags[0].id
+
+		# Create the new post
+		response = self.client.post('/admin/blogengine/post/add/', {
+			'title': 'This is another test post',
+			'text': 'This is the text',
+			'pub_date_0': '2016-01-17',
+			'pub_date_1': '15:05:00',
+			'slug': 'my-first-post',
+			'tag': str(tag_id)
+			},
+			follow = True
+			)
+		self.assertEquals(response.status_code, 200)
+
+		# Check added successfully
+		self.assertTrue('added successfully' in smart_text(response.content))
+
+		# Check new post now in database
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+
 # Test for Views
 class PostViewTest(BaseAcceptanceTest):
 
