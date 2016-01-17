@@ -1,4 +1,4 @@
-import markdown
+import markdown2 as markdown
 import feedparser
 
 from django.test import TestCase, Client, LiveServerTestCase
