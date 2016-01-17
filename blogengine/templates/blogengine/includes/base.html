@@ -6,6 +6,7 @@
         <title>{% block title %}akll.io{% endblock %}</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="alternate" type="application/rss+xml" title="Blog posts" href="/feeds/posts/" >
 
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
         <!-- Place favicon.ico in the root directory -->
@@ -36,32 +37,32 @@
             <div class="container">
                 <nav>
                     <ul class="nav nav-justified">
-                        <li class="active"><a href="#">Weblog</a></li>
-                        <li><a href="#">About me</a></li>
-                        <li><a href="#">Apps</a></li>
-                        <li><a href="#">Contact</a></li>
+                        {% load flatpages %}
+                        {% get_flatpages as flatpages %}
+                        {% for flatpage in flatpages %}
+                            <li>
+                                <a href="{{ flatpage.url }}">
+                                    {{ flatpage.title }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                        <li>
+                            <a href="/feeds/posts/">
+                            RSS feed
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>          
         </div>
 
-        <div class="blog">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8 blog-main">
-                        <div class="blog-post">
-                            {% block content %}{% endblock %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% block content %}{% endblock %}
 
         <div class="container footer">
             <div class="row">
                 <div class="span12">
                     <p>
-                        Copyright &copy; {% now "Y" %}
+                        Copyright &copy; Andreas Keller Leth Laursen 2015 - {% now "Y" %}
                     </p>
                 </div>
             </div>
