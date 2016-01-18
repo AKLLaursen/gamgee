@@ -1,7 +1,11 @@
+import markdown2
+
 from django.shortcuts import render
 from django.views.generic import ListView
 from django.contrib.syndication.views import Feed
 from blogengine.models import Category, Tag, Post
+from django.utils.safestring import mark_safe
+from django.utils.encoding import force_text
 
 class CategoryListView(ListView):
 
@@ -40,4 +44,9 @@ class PostsFeed(Feed):
 		return item.title
 
 	def item_description(self, item):
-		return item.text
+
+		extras = ["fenced-code-blocks"]
+
+		content = mark_safe(markdown2.markdown(force_text(item.text), extras = extras))
+
+		return content

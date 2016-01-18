@@ -985,7 +985,7 @@ class FeedTest(BaseAcceptanceTest):
 		post.author = author
 		post.category = category
 		post.pub_date = timezone.now()
-		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
+		post.text = 'This is a *test* post'
 		post.slug = 'another-first-post'
 
 		post.save()
@@ -1012,7 +1012,7 @@ class FeedTest(BaseAcceptanceTest):
 		# Check post retrieved is the correct one
 		feed_post = feed.entries[0]
 		self.assertEquals(feed_post.title, post.title)
-		self.assertEquals(feed_post.description, post.text)
+		self.assertTrue( 'This is a <em>test</em> post' in feed_post.description)
 
 # Test for flat pages
 class FlatPageViewTest(BaseAcceptanceTest):
