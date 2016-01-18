@@ -56,6 +56,9 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'gamgee.urls'
@@ -150,3 +153,36 @@ STATIC_ROOT = 'staticfiles'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+# Per-site caching
+def get_cache():
+
+    import os
+    
+    try:
+        os.environ['MEMCACHE_SERVERS'] = os.environ['MEMCACHIER_SERVERS'].replace(',', ';')
+        os.environ['MEMCACHE_USERNAME'] = os.environ['MEMCACHIER_USERNAME']
+        os.environ['MEMCACHE_PASSWORD'] = os.environ['MEMCACHIER_PASSWORD']
+
+        return {
+            'default': {
+                'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
+                'TIMEOUT': 300,
+                'BINARY': True,
+                'OPTIONS': { 'tcp_nodelay': True }
+            }
+        }
+
+    except:
+
+        return {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+            }
+        }
+
+CACHES = get_cache()
+
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 300
+CACHE_MIDDLEWARE_KEY_PREFIX = ''
