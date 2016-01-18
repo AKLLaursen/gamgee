@@ -65,6 +65,25 @@ class AuthorFactory(factory.django.DjangoModelFactory):
 	email = 'test@user.com'
 	password = 'password'
 
+class PostFactory(factory.django.DjangoModelFactory):
+
+	class Meta:
+		model = Post
+		django_get_or_create = (
+			'title',
+			'text',
+			'slug',
+			'pub_date'
+		)
+
+	title = 'Test post'
+	text = 'This is a test post for testing.'
+	slug = 'test-post'
+	pub_date = timezone.now()
+	author = factory.SubFactory(AuthorFactory)
+	site = factory.SubFactory(SiteFactory)
+	category = factory.SubFactory(CategoryFactory)
+
 # Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
 class BaseAcceptanceTest(LiveServerTestCase):
 	def setUp(self):
@@ -109,32 +128,11 @@ class PostTest(TestCase):
 
 	def test_create_post(self):
 
-		# Create a category
-		category = CategoryFactory()
-
 		# Create the tag
 		tag = TagFactory()
 
-		# Create a blog author
-		author = AuthorFactory()
-
-		# Create the site
-		site = SiteFactory()
-
 		# Creates the post
-		post = Post()
-
-		# Sets the attributes of the post
-		post.title = 'Test post'
-		post.author = author
-		post.pub_date = timezone.now()
-		post.category = category
-		post.text = 'This is a test post for testing.'
-		post.slug = 'test-post'
-		post.site = site
-
-		# Saves the post
-		post.save()
+		post = PostFactory()
 
 		# Add the tag
 		post.tags.add(tag)
@@ -433,29 +431,11 @@ class AdminTest(BaseAcceptanceTest):
 
 	def test_edit_post(self):
 
-		# Create the category
-		category = CategoryFactory()
-
 		# Create the tag
 		tag = TagFactory()
 
-		# Create a blog author
-		author = AuthorFactory()
-
-		# Create the site
-		site = SiteFactory()
-
 		# Create the post
-		post = Post()
-		post.title = 'Test post number 1'
-		post.author = author
-		post.pub_date = timezone.now()
-		post.text = 'This is the first test post for testing.'
-		post.slug = 'test-post-number-1'
-		post.site = site
-		post.category = category
-
-		post.save()
+		post = PostFactory(title = 'Test post number 1', text = 'This is the first test post for testing.', slug = 'test-post-number-1')
 
 		post.tags.add(tag)
 		post.save()
@@ -506,31 +486,11 @@ class AdminTest(BaseAcceptanceTest):
 
 	def test_delete_post(self):
 
-		# Create the category
-		category = CategoryFactory()
-
 		# Create the tag
 		tag = TagFactory()
 
-		# Create a blog author
-		author = AuthorFactory()
-
-		# Create the site
-		site = SiteFactory()
-
 		# Creates the post
-		post = Post()
-
-		# Sets the attributes of the post
-		post.title = 'Test post'
-		post.author = author
-		post.category = category
-		post.pub_date = timezone.now()
-		post.text = 'This is a test post for testing.'
-		post.slug = 'test-post'
-		post.site = site
-
-		post.save()
+		post = PostFactory()
 
 		post.tags.add(tag)
 		post.save()
@@ -647,31 +607,11 @@ class PostViewTest(BaseAcceptanceTest):
 
 	def test_index(self):
 
-		# Create the category
-		category = CategoryFactory()
-
 		# Create the tag
 		tag = TagFactory()
 
-		# Create a blog author
-		author = AuthorFactory()
-
-		# Create the site
-		site = SiteFactory()
-
 		#Create a post
-		post = Post()
-
-		# Sets the attributes of the post
-		post.title = 'Test post'
-		post.author = author
-		post.category = category
-		post.pub_date = timezone.now()
-		post.text = 'This is a test [post for testing.](http://127.0.0.1:8000/)'
-		post.slug = 'test-post'
-		post.site = site
-
-		post.save()
+		post = PostFactory(text = 'This is a test [post for testing.](http://127.0.0.1:8000/)')
 
 		post.tags.add(tag)
 		post.save()
@@ -707,31 +647,11 @@ class PostViewTest(BaseAcceptanceTest):
 
 	def test_post_page(self):
 
-		# Create the category
-		category = CategoryFactory()
-
 		# Create the tag
 		tag = TagFactory()
 
-		# Create a blog author
-		author = AuthorFactory()
-
-		# Create the site
-		site = SiteFactory()
-
 		# Create a post
-		post = Post()
-
-		# Ammend to post
-		post.title = 'Another first post'
-		post.author = author
-		post.category = category
-		post.pub_date = timezone.now()
-		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
-		post.slug = 'another-first-post'
-		post.site = site
-
-		post.save()
+		post = PostFactory(title = 'Another first post', text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)', slug = 'another-first-post')
 
 		post.tags.add(tag)
 		post.save()
@@ -772,28 +692,11 @@ class PostViewTest(BaseAcceptanceTest):
 
 	def test_category_page(self):
 
-		# Create the category
+		# Create a category
 		category = CategoryFactory()
 
-		# Create a blog author
-		author = AuthorFactory()
-
-		# Create the site
-		site = SiteFactory()
-
 		# Create a post
-		post = Post()
-
-		# Ammend to post
-		post.title = 'Another first post'
-		post.author = author
-		post.category = category
-		post.pub_date = timezone.now()
-		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
-		post.slug = 'another-first-post'
-		post.site = site
-
-		post.save()
+		post = PostFactory(title = 'Another first post', text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)', slug = 'another-first-post')
 
 		# Confirm that a new post has been saved
 		all_posts = Post.objects.all()
@@ -830,24 +733,8 @@ class PostViewTest(BaseAcceptanceTest):
 		# Create the tag
 		tag = TagFactory()
 
-		# Create a blog author
-		author = AuthorFactory()
-
-		# Create the site
-		site = SiteFactory()
-
 		# Create the post
-		post = Post()
-
-		# Ammend to post
-		post.title = 'Another first post'
-		post.author = author
-		post.pub_date = timezone.now()
-		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
-		post.slug = 'another-first-post'
-		post.site = site
-
-		post.save()
+		post = PostFactory(title = 'Another first post', text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)', slug = 'another-first-post')
 
 		post.tags.add(tag)
 		post.save()
@@ -897,32 +784,13 @@ class PostViewTest(BaseAcceptanceTest):
 
 	def test_clear_cache(self):
 
-		# Create the category
-		category = CategoryFactory()
-
 		# Create the tag
 		tag = TagFactory()
 
-		# Create the author
-		author = AuthorFactory()
-
 		# Create the site
-		site = SiteFactory()
-
-		# Create the first post
-		post = Post()
-		post.title = 'This is a test post'
-		post.text = 'Look at this testing of [my first blog post](http://127.0.0.1:8000/)'
-		post.slug = 'this-is-a-test-post'
-		post.site = site
-		post.pub_date = timezone.now()
-		post.author = author
-		post.category = category
-
-		post.save()
+		post = PostFactory(title = 'This is a test post', text = 'Look at this testing of [my first blog post](http://127.0.0.1:8000/)', slug = 'this-is-a-test-post')
 
 		post.tags.add(tag)
-
 		post.save()
 
 		# Check new post saved
@@ -934,19 +802,9 @@ class PostViewTest(BaseAcceptanceTest):
 		self.assertEquals(response.status_code, 200)
 
 		# Create the second post
-		post = Post()
-		post.title = 'A second test post'
-		post.text = 'Look at this testing of [my second blog post](http://127.0.0.1:8000/)'
-		post.slug = 'a-second-test-post'
-		post.pub_date = timezone.now()
-		post.author = author
-		post.category = category
-		post.site = site
-
-		post.save()
+		post = PostFactory(title = 'A second test post', text = 'Look at this testing of [my second blog post](http://127.0.0.1:8000/)', slug = 'a-second-test-post')
 
 		post.tags.add(tag)
-
 		post.save()
 
 		# Fetch the index again
@@ -959,31 +817,11 @@ class FeedTest(BaseAcceptanceTest):
 
 	def test_all_post_feed(self):
 
-		# Create the category
-		category = CategoryFactory()
-
 		# Create the tag
 		tag = TagFactory()
 
-		# Create a blog author
-		author = AuthorFactory()
-
-		# Create the site
-		site = SiteFactory()
-
 		# Create a post
-		post = Post()
-
-		# Ammend to post
-		post.title = 'Another first post'
-		post.author = author
-		post.category = category
-		post.pub_date = timezone.now()
-		post.text = 'This is a *test* post'
-		post.slug = 'another-first-post'
-		post.site = site
-
-		post.save()
+		post = PostFactory(title = 'Another first post', text = 'This is a *test* post', slug = 'another-first-post')
 
 		post.tags.add(tag)
 		post.save()
