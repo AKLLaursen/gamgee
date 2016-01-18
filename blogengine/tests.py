@@ -54,6 +54,17 @@ class TagFactory(factory.django.DjangoModelFactory):
 	description = 'The R programming language'
 	slug = 'r'
 
+class AuthorFactory(factory.django.DjangoModelFactory):
+
+	class Meta:
+
+		model = User
+		django_get_or_create = ('username','email', 'password',)
+
+	username = 'TestUser'
+	email = 'test@user.com'
+	password = 'password'
+
 # Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
 class BaseAcceptanceTest(LiveServerTestCase):
 	def setUp(self):
@@ -105,8 +116,7 @@ class PostTest(TestCase):
 		tag = TagFactory()
 
 		# Create a blog author
-		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-		author.save()
+		author = AuthorFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -430,9 +440,7 @@ class AdminTest(BaseAcceptanceTest):
 		tag = TagFactory()
 
 		# Create a blog author
-		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-
-		author.save()
+		author = AuthorFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -505,9 +513,7 @@ class AdminTest(BaseAcceptanceTest):
 		tag = TagFactory()
 
 		# Create a blog author
-		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-
-		author.save()
+		author = AuthorFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -648,9 +654,7 @@ class PostViewTest(BaseAcceptanceTest):
 		tag = TagFactory()
 
 		# Create a blog author
-		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-
-		author.save()
+		author = AuthorFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -710,9 +714,7 @@ class PostViewTest(BaseAcceptanceTest):
 		tag = TagFactory()
 
 		# Create a blog author
-		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-
-		author.save()
+		author = AuthorFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -774,9 +776,7 @@ class PostViewTest(BaseAcceptanceTest):
 		category = CategoryFactory()
 
 		# Create a blog author
-		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-
-		author.save()
+		author = AuthorFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -831,9 +831,7 @@ class PostViewTest(BaseAcceptanceTest):
 		tag = TagFactory()
 
 		# Create a blog author
-		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-
-		author.save()
+		author = AuthorFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -906,9 +904,7 @@ class PostViewTest(BaseAcceptanceTest):
 		tag = TagFactory()
 
 		# Create the author
-		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-
-		author.save()
+		author = AuthorFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -970,9 +966,7 @@ class FeedTest(BaseAcceptanceTest):
 		tag = TagFactory()
 
 		# Create a blog author
-		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
-
-		author.save()
+		author = AuthorFactory()
 
 		# Create the site
 		site = SiteFactory()
