@@ -1,5 +1,6 @@
 import markdown2 as markdown
 import feedparser
+import factory.django
 
 from django.test import TestCase, Client, LiveServerTestCase
 from django.utils import timezone
@@ -8,6 +9,20 @@ from blogengine.models import Post, Category, Tag
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
+
+# Factories
+class SiteFactory(factory.django.DjangoModelFactory):
+
+	class Meta:
+
+		model = Site
+		django_get_or_create = (
+			'name',
+			'domain'
+		)
+
+	name = 'example.com'
+	domain = 'example.com'
 
 # Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
 class BaseAcceptanceTest(LiveServerTestCase):
@@ -87,6 +102,9 @@ class PostTest(TestCase):
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
 		author.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Creates the post
 		post = Post()
 
@@ -97,6 +115,7 @@ class PostTest(TestCase):
 		post.category = category
 		post.text = 'This is a test post for testing.'
 		post.slug = 'test-post'
+		post.site = site
 
 		# Saves the post
 		post.save()
@@ -126,6 +145,8 @@ class PostTest(TestCase):
 		self.assertEquals(only_post.text, 'This is a test post for testing.')
 		self.assertEquals(only_post.slug, 'test-post')
 		self.assertEquals(only_post.__unicode__(), 'Test post')
+		self.assertEquals(only_post.site.name, 'example.com')
+		self.assertEquals(only_post.site.domain, 'example.com')
 
 		# Check tags
 		post_tags = only_post.tags.all()
@@ -375,6 +396,9 @@ class AdminTest(BaseAcceptanceTest):
 
 		tag.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
 
@@ -390,6 +414,10 @@ class AdminTest(BaseAcceptanceTest):
 		all_tags = Tag.objects.all()
 		tag_id = all_tags[0].id
 
+		# Get the site ID
+		all_sites = Site.objects.all()
+		site_id = all_sites[0].id
+
 		# Create a test post
 		response = self.client.post('/admin/blogengine/post/add/', {
 			'title': 'Test post',
@@ -397,6 +425,7 @@ class AdminTest(BaseAcceptanceTest):
 			'pub_date_0': '2015-12-30',
 			'pub_date_1': '12:56:05',
 			'slug': 'test-post',
+			'site': str(site_id),
 			'category': str(category_id),
 			'tags': str(tag_id)
 			},
@@ -431,6 +460,9 @@ class AdminTest(BaseAcceptanceTest):
 
 		author.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Create the post
 		post = Post()
 		post.title = 'Test post number 1'
@@ -438,6 +470,8 @@ class AdminTest(BaseAcceptanceTest):
 		post.pub_date = timezone.now()
 		post.text = 'This is the first test post for testing.'
 		post.slug = 'test-post-number-1'
+		post.site = site
+		post.category = category
 
 		post.save()
 
@@ -459,6 +493,10 @@ class AdminTest(BaseAcceptanceTest):
 		all_tags = Tag.objects.all()
 		tag_id = all_tags[0].id
 
+		# Get the site ID
+		all_sites = Site.objects.all()
+		site_id = all_sites[0].id
+
 		# Edit the post
 		response = self.client.post(('/admin/blogengine/post/' + str(post_id) + '/change/'), {
 			'title': 'Test post number 2',
@@ -466,6 +504,7 @@ class AdminTest(BaseAcceptanceTest):
 			'pub_date_0': '2015-12-30',
 			'pub_date_1': '12:56:05',
 			'slug': 'test-post-number-2',
+			'site': str(site_id),
 			'category': str(category_id),
 			'tags': str(tag_id)
 			},
@@ -504,6 +543,9 @@ class AdminTest(BaseAcceptanceTest):
 
 		author.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Creates the post
 		post = Post()
 
@@ -514,6 +556,7 @@ class AdminTest(BaseAcceptanceTest):
 		post.pub_date = timezone.now()
 		post.text = 'This is a test post for testing.'
 		post.slug = 'test-post'
+		post.site = site
 
 		post.save()
 
@@ -548,6 +591,9 @@ class AdminTest(BaseAcceptanceTest):
 
 		category.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
 
@@ -559,6 +605,10 @@ class AdminTest(BaseAcceptanceTest):
 		all_categories = Category.objects.all()
 		category_id = all_categories[0].id
 
+		# Get the site ID
+		all_sites = Site.objects.all()
+		site_id = all_sites[0].id
+
 		# Create the new post
 		response = self.client.post('/admin/blogengine/post/add/', {
 			'title': 'This is another test post',
@@ -566,6 +616,7 @@ class AdminTest(BaseAcceptanceTest):
 			'pub_date_0': '2016-01-17',
 			'pub_date_1': '15:05:00',
 			'slug': 'my-first-post',
+			'site': str(site_id),
 			'category': str(category_id)
 			},
 			follow = True
@@ -588,6 +639,9 @@ class AdminTest(BaseAcceptanceTest):
 
 		tag.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
 
@@ -599,6 +653,10 @@ class AdminTest(BaseAcceptanceTest):
 		all_tags = Tag.objects.all()
 		tag_id = all_tags[0].id
 
+		# Get the site ID
+		all_sites = Site.objects.all()
+		site_id = all_sites[0].id
+
 		# Create the new post
 		response = self.client.post('/admin/blogengine/post/add/', {
 			'title': 'This is another test post',
@@ -606,6 +664,7 @@ class AdminTest(BaseAcceptanceTest):
 			'pub_date_0': '2016-01-17',
 			'pub_date_1': '15:05:00',
 			'slug': 'my-first-post',
+			'site': str(site_id),
 			'tag': str(tag_id)
 			},
 			follow = True
@@ -643,6 +702,9 @@ class PostViewTest(BaseAcceptanceTest):
 
 		author.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		#Create a post
 		post = Post()
 
@@ -653,6 +715,7 @@ class PostViewTest(BaseAcceptanceTest):
 		post.pub_date = timezone.now()
 		post.text = 'This is a test [post for testing.](http://127.0.0.1:8000/)'
 		post.slug = 'test-post'
+		post.site = site
 
 		post.save()
 
@@ -709,6 +772,9 @@ class PostViewTest(BaseAcceptanceTest):
 
 		author.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Create a post
 		post = Post()
 
@@ -719,6 +785,7 @@ class PostViewTest(BaseAcceptanceTest):
 		post.pub_date = timezone.now()
 		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
 		post.slug = 'another-first-post'
+		post.site = site
 
 		post.save()
 
@@ -773,6 +840,9 @@ class PostViewTest(BaseAcceptanceTest):
 
 		author.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Create a post
 		post = Post()
 
@@ -783,6 +853,7 @@ class PostViewTest(BaseAcceptanceTest):
 		post.pub_date = timezone.now()
 		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
 		post.slug = 'another-first-post'
+		post.site = site
 
 		post.save()
 
@@ -830,6 +901,9 @@ class PostViewTest(BaseAcceptanceTest):
 
 		author.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Create the post
 		post = Post()
 
@@ -839,6 +913,7 @@ class PostViewTest(BaseAcceptanceTest):
 		post.pub_date = timezone.now()
 		post.text = 'This is a test post [for a blog.](http://127.0.0.1:8000/)'
 		post.slug = 'another-first-post'
+		post.site = site
 
 		post.save()
 
@@ -910,11 +985,15 @@ class PostViewTest(BaseAcceptanceTest):
 
 		author.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Create the first post
 		post = Post()
 		post.title = 'This is a test post'
 		post.text = 'Look at this testing of [my first blog post](http://127.0.0.1:8000/)'
 		post.slug = 'this-is-a-test-post'
+		post.site = site
 		post.pub_date = timezone.now()
 		post.author = author
 		post.category = category
@@ -941,6 +1020,7 @@ class PostViewTest(BaseAcceptanceTest):
 		post.pub_date = timezone.now()
 		post.author = author
 		post.category = category
+		post.site = site
 
 		post.save()
 
@@ -977,6 +1057,9 @@ class FeedTest(BaseAcceptanceTest):
 
 		author.save()
 
+		# Create the site
+		site = SiteFactory()
+
 		# Create a post
 		post = Post()
 
@@ -987,6 +1070,7 @@ class FeedTest(BaseAcceptanceTest):
 		post.pub_date = timezone.now()
 		post.text = 'This is a *test* post'
 		post.slug = 'another-first-post'
+		post.site = site
 
 		post.save()
 

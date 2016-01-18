@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.utils.text import slugify
 from django.db.models.signals import post_save
 from django.core.cache import cache
@@ -58,6 +59,7 @@ class Post(models.Model):
 	pub_date = models.DateTimeField()
 	text = models.TextField()
 	slug = models.SlugField(max_length = 40, unique = True)
+	site = models.ForeignKey(Site)
 
 	# Define url for each post. (Possibly change this to have 0 in front of single number elements.)
 	def get_absolute_url(self):
