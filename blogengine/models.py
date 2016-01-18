@@ -12,12 +12,12 @@ class Category(models.Model):
 	description = models.TextField()
 	slug = models.SlugField(max_length = 40, unique = True, blank = True, null = True)
 
-	def save(self):
+	def save(self, *args, **kwargs):
 
 		if not self.slug:
 			self.slug = slugify(str(self.name))
 
-		super(Category, self).save()
+		super(Category, self).save(*args, **kwargs)
 
 	def get_absolute_url(self):
 		return '/category/{0}/'.format(self.slug)

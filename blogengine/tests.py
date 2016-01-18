@@ -24,6 +24,21 @@ class SiteFactory(factory.django.DjangoModelFactory):
 	name = 'example.com'
 	domain = 'example.com'
 
+class CategoryFactory(factory.django.DjangoModelFactory):
+
+	class Meta:
+
+		model = Category
+		django_get_or_create = (
+			'name',
+			'description',
+			'slug'
+		)
+
+	name = 'Data Science - Test'
+	description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
+	slug = 'data-science-test'
+
 # Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
 class BaseAcceptanceTest(LiveServerTestCase):
 	def setUp(self):
@@ -35,15 +50,7 @@ class PostTest(TestCase):
 	def test_create_category(self):
 
 		# Create the category
-		category = Category()
-
-		# Add attributes
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-		category.slug = 'data-science-test'
-
-		# Save the category
-		category.save()
+		category = CategoryFactory()
 
 		# Check that the category can be found
 		all_categories = Category.objects.all()
@@ -86,11 +93,7 @@ class PostTest(TestCase):
 	def test_create_post(self):
 
 		# Create a category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create the tag
 		tag = Tag()
@@ -233,11 +236,7 @@ class AdminTest(BaseAcceptanceTest):
 	def test_edit_category(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
@@ -267,11 +266,7 @@ class AdminTest(BaseAcceptanceTest):
 	def test_delete_category(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
@@ -383,11 +378,7 @@ class AdminTest(BaseAcceptanceTest):
 	def test_create_post(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create the tag
 		tag = Tag()
@@ -442,11 +433,7 @@ class AdminTest(BaseAcceptanceTest):
 	def test_edit_post(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create the tag
 		tag = Tag()
@@ -525,11 +512,7 @@ class AdminTest(BaseAcceptanceTest):
 	def test_delete_post(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create the tag
 		tag = Tag()
@@ -585,11 +568,7 @@ class AdminTest(BaseAcceptanceTest):
 	def test_create_post_without_tag(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -684,11 +663,7 @@ class PostViewTest(BaseAcceptanceTest):
 	def test_index(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create the tag
 		tag = Tag()
@@ -754,11 +729,7 @@ class PostViewTest(BaseAcceptanceTest):
 	def test_post_page(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create the tag
 		tag = Tag()
@@ -829,11 +800,7 @@ class PostViewTest(BaseAcceptanceTest):
 	def test_category_page(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
@@ -967,11 +934,7 @@ class PostViewTest(BaseAcceptanceTest):
 
 		# Create the category
 
-		category = Category()
-		category.name = 'R'
-		category.description = 'The R programming language'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create the tag
 		tag = Tag()
@@ -1039,11 +1002,7 @@ class FeedTest(BaseAcceptanceTest):
 	def test_all_post_feed(self):
 
 		# Create the category
-		category = Category()
-		category.name = 'Data Science - Test'
-		category.description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
-
-		category.save()
+		category = CategoryFactory()
 
 		# Create the tag
 		tag = Tag()
