@@ -1,9 +1,16 @@
 language: python
 python:
 - 3.4.3
+# Implement memcaching
+services: memcached
+before_install:
+    - sudo apt-get install -y libmemcached-dev
+# Installing dependencies
 install: pip install -r requirements.txt
+# Run tests
 script: coverage run --include="blogengine/*" --omit="blogengine/migrations/*" manage.py
   test blogengine
+# After success let coveralls generate report and push to heroku
 after_success: coveralls
 deploy:
   provider: heroku

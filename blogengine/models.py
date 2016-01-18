@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from django.db.models.signals import post_save
+from django.core.cache import cache
 
 # Category model
 class Category(models.Model):
@@ -66,3 +68,10 @@ class Post(models.Model):
 
 	class Meta:
 		ordering = ['-pub_date']
+
+# Define signals function
+def new_post(sender, instance, created, **kwargs):
+    cache.clear()
+
+# Set up signals
+post_save.connect(new_post, sender = Post)

@@ -888,6 +888,72 @@ class PostViewTest(BaseAcceptanceTest):
 		self.assertEquals(response.status_code, 200)
 		self.assertTrue('No posts found' in smart_text(response.content))
 
+	def test_clear_cache(self):
+
+		# Create the category
+
+		category = Category()
+		category.name = 'R'
+		category.description = 'The R programming language'
+
+		category.save()
+
+		# Create the tag
+		tag = Tag()
+		tag.name = 'Python'
+		tag.description = 'The Python programming language'
+
+		tag.save()
+
+		# Create the author
+		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
+
+		author.save()
+
+		# Create the first post
+		post = Post()
+		post.title = 'This is a test post'
+		post.text = 'Look at this testing of [my first blog post](http://127.0.0.1:8000/)'
+		post.slug = 'this-is-a-test-post'
+		post.pub_date = timezone.now()
+		post.author = author
+		post.category = category
+
+		post.save()
+
+		post.tags.add(tag)
+
+		post.save()
+
+		# Check new post saved
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+
+		# Fetch the index
+		response = self.client.get('/', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Create the second post
+		post = Post()
+		post.title = 'A second test post'
+		post.text = 'Look at this testing of [my second blog post](http://127.0.0.1:8000/)'
+		post.slug = 'a-second-test-post'
+		post.pub_date = timezone.now()
+		post.author = author
+		post.category = category
+
+		post.save()
+
+		post.tags.add(tag)
+
+		post.save()
+
+		# Fetch the index again
+		response = self.client.get('/', follow = True)
+
+		# Check second post present
+		self.assertTrue('my second blog post' in smart_text(response.content))
+
 class FeedTest(BaseAcceptanceTest):
 
 	def test_all_post_feed(self):
