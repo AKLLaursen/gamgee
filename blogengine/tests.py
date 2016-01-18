@@ -39,6 +39,21 @@ class CategoryFactory(factory.django.DjangoModelFactory):
 	description = 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.'
 	slug = 'data-science-test'
 
+class TagFactory(factory.django.DjangoModelFactory):
+
+	class Meta:
+
+		model = Tag
+		django_get_or_create = (
+			'name',
+			'description',
+			'slug'
+		)
+
+	name = 'R'
+	description = 'The R programming language'
+	slug = 'r'
+
 # Base class that the following test classes can inherit from. Thus we don't have to have each test class inherit from LiveServerTestCase
 class BaseAcceptanceTest(LiveServerTestCase):
 	def setUp(self):
@@ -67,16 +82,7 @@ class PostTest(TestCase):
 	def test_create_tag(self):
 
 		# Create the tag
-		tag = Tag()
-
-		# Add attributes
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-		tag.slug = 'r'
-
-		# Save the tag
-
-		tag.save()
+		tag = TagFactory()
 
 		# Check that the tag can be found
 		all_tags = Tag.objects.all()
@@ -96,10 +102,7 @@ class PostTest(TestCase):
 		category = CategoryFactory()
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-		tag.save()
+		tag = TagFactory()
 
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
@@ -316,11 +319,7 @@ class AdminTest(BaseAcceptanceTest):
 	def test_edit_tag(self):
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The Python programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
@@ -349,11 +348,7 @@ class AdminTest(BaseAcceptanceTest):
 	def test_delete_tag(self):
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Log in
 		self.client.login(username = 'testuser', password = 'testuserpass')
@@ -381,11 +376,7 @@ class AdminTest(BaseAcceptanceTest):
 		category = CategoryFactory()
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -436,11 +427,7 @@ class AdminTest(BaseAcceptanceTest):
 		category = CategoryFactory()
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
@@ -515,11 +502,7 @@ class AdminTest(BaseAcceptanceTest):
 		category = CategoryFactory()
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
@@ -612,11 +595,7 @@ class AdminTest(BaseAcceptanceTest):
 	def test_create_post_without_categorys(self):
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Create the site
 		site = SiteFactory()
@@ -666,11 +645,7 @@ class PostViewTest(BaseAcceptanceTest):
 		category = CategoryFactory()
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
@@ -732,11 +707,7 @@ class PostViewTest(BaseAcceptanceTest):
 		category = CategoryFactory()
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
@@ -857,11 +828,7 @@ class PostViewTest(BaseAcceptanceTest):
 	def test_tag_page(self):
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
@@ -933,15 +900,10 @@ class PostViewTest(BaseAcceptanceTest):
 	def test_clear_cache(self):
 
 		# Create the category
-
 		category = CategoryFactory()
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'Python'
-		tag.description = 'The Python programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Create the author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
@@ -1005,11 +967,7 @@ class FeedTest(BaseAcceptanceTest):
 		category = CategoryFactory()
 
 		# Create the tag
-		tag = Tag()
-		tag.name = 'R'
-		tag.description = 'The R programming language'
-
-		tag.save()
+		tag = TagFactory()
 
 		# Create a blog author
 		author = User.objects.create_user('TestUser', 'test@user.com', 'password')
