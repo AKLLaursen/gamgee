@@ -9,6 +9,8 @@ dj-static==0.0.6
 django-jenkins==0.18.1
 django-pylibmc-sasl==0.2.4
 docopt==0.6.2
+factory-boy==2.6.0
+fake-factory==0.5.3
 feedparser==5.2.1
 gunicorn==19.4.3
 lazy-object-proxy==1.2.1
