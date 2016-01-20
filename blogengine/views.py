@@ -1,6 +1,6 @@
 import markdown2
 
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 from django.contrib.syndication.views import Feed
 from blogengine.models import Category, Tag, Post
@@ -50,3 +50,20 @@ class PostsFeed(Feed):
 		content = mark_safe(markdown2.markdown(force_text(item.text), extras = extras))
 
 		return content
+
+class CategoryPostsFeed(PostsFeed):
+
+	def get_object(self, request, slug):
+		return get_object_or_404(Category, slug = slug)
+
+	def title(self, obj):
+		return "RSS feed - blog posts in category %s" % obj.name
+
+	def link(self, obj):
+		return obj.get_absolute_url()
+
+	def description(self, obj):
+		return "RSS feed - blog posts in category %s" % obj.name
+
+	def items(self, obj):
+		return Post.objects.filter(category = obj).order_by('-pub_date')

@@ -847,6 +847,33 @@ class FeedTest(BaseAcceptanceTest):
 		self.assertEquals(feed_post.title, post.title)
 		self.assertTrue( 'This is a <em>test</em> post' in feed_post.description)
 
+	def test_category_feed(self):
+
+		# Create a post
+		post = PostFactory(text = 'This is my *first* blog post')
+
+		# Create another post with a different category
+		category = CategoryFactory(name = 'Python', description = 'The Python programming language', slug = 'python')
+		post2 = PostFactory(text = 'This is my *second* blog post', title = 'My second post', slug = 'my-second-post', category = category)
+
+		# Fetch the feed
+		response = self.client.get('/feeds/posts/category/data-science-test/', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Parse the feed
+		feed = feedparser.parse(smart_text(response.content))
+
+		# Check length
+		self.assertEquals(len(feed.entries), 1)
+
+		# Check post retrieved is the correct one
+		feed_post = feed.entries[0]
+		self.assertEquals(feed_post.title, post.title)
+		self.assertTrue('This is my <em>first</em> blog post' in feed_post.description)
+
+		# Check other post is not in this feed
+		self.assertTrue('This is my <em>second</em> blog post' not in smart_text(response.content))
+
 # Test for flat pages
 class FlatPageViewTest(BaseAcceptanceTest):
 
