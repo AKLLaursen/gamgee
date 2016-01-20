@@ -166,7 +166,7 @@ def get_cache():
 
         return {
             'default': {
-                'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
+                'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
                 'TIMEOUT': 300,
                 'BINARY': True,
                 'OPTIONS': { 'tcp_nodelay': True }

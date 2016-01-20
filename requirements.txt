@@ -7,7 +7,7 @@ coveralls==1.1
 dj-database-url==0.3.0
 dj-static==0.0.6
 django-jenkins==0.18.1
-django-pylibmc-sasl==0.2.4
+#django-pylibmc-sasl==0.2.4
 docopt==0.6.2
 factory-boy==2.6.0
 fake-factory==0.5.3
