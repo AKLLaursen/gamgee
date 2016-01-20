@@ -9,6 +9,8 @@ from django.utils.encoding import force_text
 
 class CategoryListView(ListView):
 
+	template_name = 'blogengine/category_post_list.html'
+
 	def get_queryset(self):
 		slug = self.kwargs['slug']
 
@@ -18,6 +20,19 @@ class CategoryListView(ListView):
 			
 		except Category.DoesNotExist:
 			return Post.objects.none()
+
+	def get_context_data(self,*args, **kwargs):
+
+		context = super(CategoryListView, self).get_context_data(*args, **kwargs)
+		slug = self.kwargs['slug']
+
+		try:
+			context['category'] = Category.objects.get(slug = slug)
+
+		except Category.DoesNotExist:
+			context['category'] = None
+		
+		return context
 
 class TagListView(ListView):
 
@@ -33,9 +48,9 @@ class TagListView(ListView):
 
 class PostsFeed(Feed):
 
-	title = "RSS feed - posts"
-	link = "feeds/posts/"
-	description = "RSS feed - blog posts"
+	title = 'RSS feed - posts'
+	link = 'feeds/posts/'
+	description = 'RSS feed - blog posts'
 
 	def items(self):
 		return Post.objects.order_by('-pub_date')
@@ -45,7 +60,7 @@ class PostsFeed(Feed):
 
 	def item_description(self, item):
 
-		extras = ["fenced-code-blocks"]
+		extras = ['fenced-code-blocks']
 
 		content = mark_safe(markdown2.markdown(force_text(item.text), extras = extras))
 
@@ -57,13 +72,13 @@ class CategoryPostsFeed(PostsFeed):
 		return get_object_or_404(Category, slug = slug)
 
 	def title(self, obj):
-		return "RSS feed - blog posts in category %s" % obj.name
+		return 'RSS feed - blog posts in category {0}'.format(str(obj.name))
 
 	def link(self, obj):
 		return obj.get_absolute_url()
 
 	def description(self, obj):
-		return "RSS feed - blog posts in category %s" % obj.name
+		return 'RSS feed - blog posts in category {0}'.format(str(obj.name))
 
 	def items(self, obj):
 		return Post.objects.filter(category = obj).order_by('-pub_date')

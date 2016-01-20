@@ -645,6 +645,9 @@ class PostViewTest(BaseAcceptanceTest):
 		# Check the link is marked up properly
 		self.assertTrue('<a href="http://127.0.0.1:8000/">post for testing.</a>' in smart_text(response.content))
 
+		# Check the correct template was used
+		self.assertTemplateUsed(response, 'blogengine/post_list.html')
+
 	def test_post_page(self):
 
 		# Create the tag
@@ -690,6 +693,9 @@ class PostViewTest(BaseAcceptanceTest):
 		# Check the link is marked up properly
 		self.assertTrue('<a href="http://127.0.0.1:8000/">for a blog.</a>' in smart_text(response.content))
 
+		# Check the correct template was used
+		self.assertTemplateUsed(response, 'blogengine/post_detail.html')
+
 	def test_category_page(self):
 
 		# Create a category
@@ -710,7 +716,7 @@ class PostViewTest(BaseAcceptanceTest):
 		# Fetch the category
 		response = self.client.get(category_url, follow = True)
 		self.assertEquals(response.status_code, 200)
-
+		
 		# Check that the categeory name is in the reponse
 		self.assertTrue(category.name in smart_text(response.content))
 
@@ -727,6 +733,10 @@ class PostViewTest(BaseAcceptanceTest):
 
 		# Check the link is marked up properly
 		self.assertTrue('<a href="http://127.0.0.1:8000/">for a blog.</a>' in smart_text(response.content))
+
+		# Check the correct template was used
+		self.assertTemplateUsed(response, 'blogengine/category_post_list.html')
+
 
 	def test_tag_page(self):
 
