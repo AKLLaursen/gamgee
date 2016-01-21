@@ -59,11 +59,30 @@ class AuthorFactory(factory.django.DjangoModelFactory):
 	class Meta:
 
 		model = User
-		django_get_or_create = ('username','email', 'password',)
+		django_get_or_create = (
+			'username',
+			'email',
+			'password'
+		)
 
 	username = 'TestUser'
 	email = 'test@user.com'
 	password = 'password'
+
+class FlatPageFactory(factory.django.DjangoModelFactory):
+
+	class Meta:
+
+		model = FlatPage
+		django_get_or_create = (
+			'url',
+			'title',
+			'content'
+		)
+
+	url = '/about/'
+	title = 'Test flat page about me'
+	content = 'Here is all my information.'
 
 class PostFactory(factory.django.DjangoModelFactory):
 
@@ -929,12 +948,7 @@ class FlatPageViewTest(BaseAcceptanceTest):
 	def test_create_flat_page(self):
 
 		# Create a flat page
-		page = FlatPage()
-		page.url = '/about/'
-		page.title = 'Test flat page about me'
-		page.content = 'Here is all my information.'
-
-		page.save()
+		page = FlatPageFactory()
 
 		# Add the site
 		page.sites.add(Site.objects.all()[0])
@@ -961,3 +975,53 @@ class FlatPageViewTest(BaseAcceptanceTest):
 		# Check that the title and content is in the response
 		self.assertTrue('Test flat page about me' in smart_text(response.content))
 		self.assertTrue('Here is all my information.' in smart_text(response.content))
+
+class SearchViewTest(BaseAcceptanceTest):
+
+	def test_search(self):
+
+		# Create a post
+		post = PostFactory()
+
+		# Create another post
+		post2 = PostFactory(text = 'This is my *second* blog post', title = 'My second post', slug = 'my-second-post')
+
+		# Search for first post
+		response = self.client.get('/search?q=test', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check the first post is contained in the results
+		self.assertTrue('Test post' in smart_text(response.content))
+
+		# Check the second post is not contained in the results
+		self.assertTrue('My second post' not in smart_text(response.content))
+
+		# Search for second post
+		response = self.client.get('/search?q=second', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check the first post is not contained in the results
+		self.assertTrue('Test post' not in smart_text(response.content))
+
+		# Check the second post is contained in the results
+		self.assertTrue('My second post' in smart_text(response.content))
+
+class SitemapTest(BaseAcceptanceTest):
+
+	def test_sitemap(self):
+
+		# Create a post
+		post = PostFactory()
+
+		# Create a flat page
+		page = FlatPageFactory()
+
+		# Get sitemap
+		response = self.client.get('/sitemap.xml', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check post is present in sitemap
+		self.assertTrue('test-post' in smart_text(response.content))
+
+		# Check page is present in sitemap
+		self.assertTrue('/about/' in smart_text(response.content))

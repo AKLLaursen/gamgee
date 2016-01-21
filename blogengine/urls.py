@@ -1,7 +1,15 @@
 from django.conf.urls import url
 from django.views.generic import ListView, DetailView
 from blogengine.models import Category, Tag, Post
-from blogengine.views import CategoryListView, TagListView, PostsFeed, CategoryPostsFeed, TagPostsFeed
+from blogengine.views import CategoryListView, TagListView, PostsFeed, CategoryPostsFeed, TagPostsFeed, getSearchResults
+from django.contrib.sitemaps.views import sitemap
+from blogengine.sitemap import PostSitemap, FlatpageSitemap
+
+# Define sitemaps
+sitemaps = {
+	'posts': PostSitemap,
+	'pages': FlatpageSitemap
+}
 
 # Note that patterns has been deprecated since 1.8.
 
@@ -35,4 +43,11 @@ urlpatterns = [
 
     # Tag RSS feed
     url(r'^feeds/posts/tag/(?P<slug>[a-zA-Z0-9-]+)/?$', TagPostsFeed()),
+
+    # Search posts
+    url(r'^search', getSearchResults),
+
+    # Sitemap
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name = 'django.contrib.sitemaps.views.sitemap'),
+
 ]
