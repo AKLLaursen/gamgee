@@ -716,7 +716,7 @@ class PostViewTest(BaseAcceptanceTest):
 		# Fetch the category
 		response = self.client.get(category_url, follow = True)
 		self.assertEquals(response.status_code, 200)
-		
+
 		# Check that the categeory name is in the reponse
 		self.assertTrue(category.name in smart_text(response.content))
 
@@ -775,6 +775,10 @@ class PostViewTest(BaseAcceptanceTest):
 
 		# Check the link is marked up properly
 		self.assertTrue('<a href="http://127.0.0.1:8000/">for a blog.</a>' in smart_text(response.content))
+
+		# Check the correct template was used
+		self.assertTemplateUsed(response, 'blogengine/tag_post_list.html')
+
 
 	def test_nonexistent_category_page(self):
 
@@ -879,6 +883,41 @@ class FeedTest(BaseAcceptanceTest):
 		# Check post retrieved is the correct one
 		feed_post = feed.entries[0]
 		self.assertEquals(feed_post.title, post.title)
+		self.assertTrue('This is my <em>first</em> blog post' in feed_post.description)
+
+		# Check other post is not in this feed
+		self.assertTrue('This is my <em>second</em> blog post' not in smart_text(response.content))
+
+	def test_tag_feed(self):
+
+		# Create a post
+		post = PostFactory(text='This is my *first* blog post')
+		tag = TagFactory()
+
+		post.tags.add(tag)
+		post.save()
+
+		# Create another post with a different tag
+		tag2 = TagFactory(name = 'Python', description = 'The Python programming language', slug = 'python')
+		post2 = PostFactory(text = 'This is my *second* blog post', title = 'My second post', slug = 'my-second-post')
+
+		post2.tags.add(tag2)
+		post2.save()
+
+		# Fetch the feed
+		response = self.client.get('/feeds/posts/tag/r/', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Parse the feed
+		feed = feedparser.parse(smart_text(response.content))
+
+		# Check length
+		self.assertEquals(len(feed.entries), 1)
+
+		# Check post retrieved is the correct one
+		feed_post = feed.entries[0]
+		self.assertEquals(feed_post.title, post.title)
+
 		self.assertTrue('This is my <em>first</em> blog post' in feed_post.description)
 
 		# Check other post is not in this feed

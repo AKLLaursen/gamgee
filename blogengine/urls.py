@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.views.generic import ListView, DetailView
 from blogengine.models import Category, Tag, Post
-from blogengine.views import CategoryListView, TagListView, PostsFeed, CategoryPostsFeed
+from blogengine.views import CategoryListView, TagListView, PostsFeed, CategoryPostsFeed, TagPostsFeed
 
 # Note that patterns has been deprecated since 1.8.
 
@@ -32,4 +32,7 @@ urlpatterns = [
 
 		# Category RSS feed
     url(r'^feeds/posts/category/(?P<slug>[a-zA-Z0-9-]+)/?$', CategoryPostsFeed()),
+
+    # Tag RSS feed
+    url(r'^feeds/posts/tag/(?P<slug>[a-zA-Z0-9-]+)/?$', TagPostsFeed()),
 ]
