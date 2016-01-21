@@ -4,10 +4,6 @@ python:
 # Implement memcaching
 services: memcached
 
-# Make Travis specific settings call available
-env:
-	global:
-		- BUILD_ON_TRAVIS = true
 before_install:
     - sudo apt-get install -y libmemcached-dev
 # Installing dependencies
