@@ -3,6 +3,11 @@ python:
 - 3.4.3
 # Implement memcaching
 services: memcached
+
+# Make Travis specific settings call available
+env:
+	global:
+		- BUILD_ON_TRAVIS = true
 before_install:
     - sudo apt-get install -y libmemcached-dev
 # Installing dependencies
@@ -12,8 +17,8 @@ script: coverage run --include="blogengine/*" --omit="blogengine/migrations/*" m
   test blogengine
 # After success let coveralls generate report and push to heroku
 after_success: coveralls
-deploy:
-  provider: heroku
-  api_key:
-    secure: m4uqxUqEWB32gzke9iQ7hQP7MTnRdVTvqYnZVsM/jG4kzuxk9nEWdVBdO2Anlib2DtT7zxZaoDv2BLQnDfNfyaMxv79wRcbkiTOXFFNYm+bsDE3nI56jGdXmY7do9Aq23fkr32RbEyktttmmRCrGPL1pULs0xC9vcCTU/rCy+cutPVvv80Bd1FkVXgNKAuZU6A9/ivqLS1qLM2/7IiTdavKHR5LAlU3tbIfFQoGlIWaMKl6d05221xfw4EbYoAm5E/5K2gY2mmw6guPPrB+XDYB0507makqMOHEh06u0M3HFw/+/iIyrC87pPMcyQl7Z57i9Q8PzCTie9z81tsy+Sclc+KFxTYTct48bf2+4EpdCs82uzry7j27DFGyfFoyPFr2m0c4kH9SqniYAwxUYUjp0nLcqY+I/xP7WovD83ILxrGlnbgTHlG4wIroVxbAA+TPRm38dYh8R1743xdIKjAI9Pun64tusfT5aHdFlAgsTwOXbG8abT0fkFUH6UFf7WzxgOOWG37twxaMLTMUM2MYUdpymYHyxYZK+MRX6doG4pFKJ2tHqhKsYZAvwWYywtVIsIbtp/M09ypklvukqUQnJTDxBhAdlvv7j9WnPfd4aelLvCzAs8DhG2aRWUgb8u/BaBeZOqMBBAfomoZG0MjwnLeWRVBUoZ29eu+Fbmvw=
-  app: akll
+# deploy:
+#  provider: heroku
+#  api_key:
+#    secure: m4uqxUqEWB32gzke9iQ7hQP7MTnRdVTvqYnZVsM/jG4kzuxk9nEWdVBdO2Anlib2DtT7zxZaoDv2BLQnDfNfyaMxv79wRcbkiTOXFFNYm+bsDE3nI56jGdXmY7do9Aq23fkr32RbEyktttmmRCrGPL1pULs0xC9vcCTU/rCy+cutPVvv80Bd1FkVXgNKAuZU6A9/ivqLS1qLM2/7IiTdavKHR5LAlU3tbIfFQoGlIWaMKl6d05221xfw4EbYoAm5E/5K2gY2mmw6guPPrB+XDYB0507makqMOHEh06u0M3HFw/+/iIyrC87pPMcyQl7Z57i9Q8PzCTie9z81tsy+Sclc+KFxTYTct48bf2+4EpdCs82uzry7j27DFGyfFoyPFr2m0c4kH9SqniYAwxUYUjp0nLcqY+I/xP7WovD83ILxrGlnbgTHlG4wIroVxbAA+TPRm38dYh8R1743xdIKjAI9Pun64tusfT5aHdFlAgsTwOXbG8abT0fkFUH6UFf7WzxgOOWG37twxaMLTMUM2MYUdpymYHyxYZK+MRX6doG4pFKJ2tHqhKsYZAvwWYywtVIsIbtp/M09ypklvukqUQnJTDxBhAdlvv7j9WnPfd4aelLvCzAs8DhG2aRWUgb8u/BaBeZOqMBBAfomoZG0MjwnLeWRVBUoZ29eu+Fbmvw=
+#  app: akll
