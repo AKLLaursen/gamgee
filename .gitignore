@@ -6,4 +6,3 @@ htmlcov/
 .coverage
 node_modules/
 commands.txt
-etc/
