@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'a-h*o9rjul3-g3&jd3q%i795jwsq$n+-^2a=*(e6(1#ekd--5h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'django.contrib.syndication',
     'django_jenkins',
-    'django.contrib.sitemaps'
+    'django.contrib.sitemaps',
+    'debug_toolbar',
 ]
 
 SITE_ID = 1
