@@ -1006,6 +1006,22 @@ class SearchViewTest(BaseAcceptanceTest):
 		# Check the second post is contained in the results
 		self.assertTrue('My second post' in smart_text(response.content))
 
+	def test_failing_search(self):
+
+		# Search for something that is not present
+		response = self.client.get('/search?q=wibble', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Confirm that nothing was found
+		self.assertTrue('No posts found' in smart_text(response.content))
+
+		# Try to get nonexistent second page
+		response = self.client.get('/search?q=wibble&page=2', follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Confirm that nothing was found
+		self.assertTrue('No posts found' in smart_text(response.content))
+
 class SitemapTest(BaseAcceptanceTest):
 
 	def test_sitemap(self):
