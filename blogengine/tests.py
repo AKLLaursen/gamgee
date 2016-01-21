@@ -9,6 +9,7 @@ from blogengine.models import Post, Category, Tag
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 # Factories
 class SiteFactory(factory.django.DjangoModelFactory):
@@ -640,7 +641,7 @@ class PostViewTest(BaseAcceptanceTest):
 		self.assertEquals(len(all_posts), 1)
 
 		# Get the index
-		response = self.client.get('/', follow = True)
+		response = self.client.get(reverse('blogengine:index'), follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Check that the post title is in the reponse
@@ -831,7 +832,7 @@ class PostViewTest(BaseAcceptanceTest):
 		self.assertEquals(len(all_posts), 1)
 
 		# Fetch the index
-		response = self.client.get('/', follow = True)
+		response = self.client.get(reverse('blogengine:index'), follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Create the second post
@@ -841,7 +842,7 @@ class PostViewTest(BaseAcceptanceTest):
 		post.save()
 
 		# Fetch the index again
-		response = self.client.get('/', follow = True)
+		response = self.client.get(reverse('blogengine:index'), follow = True)
 
 		# Check second post present
 		self.assertTrue('my second blog post' in smart_text(response.content))
@@ -987,7 +988,7 @@ class SearchViewTest(BaseAcceptanceTest):
 		post2 = PostFactory(text = 'This is my *second* blog post', title = 'My second post', slug = 'my-second-post')
 
 		# Search for first post
-		response = self.client.get('/search?q=test', follow = True)
+		response = self.client.get(reverse('blogengine:search') + '?q=test', follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Check the first post is contained in the results
@@ -997,7 +998,7 @@ class SearchViewTest(BaseAcceptanceTest):
 		self.assertTrue('My second post' not in smart_text(response.content))
 
 		# Search for second post
-		response = self.client.get('/search?q=second', follow = True)
+		response = self.client.get(reverse('blogengine:search') + '?q=second', follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Check the first post is not contained in the results
@@ -1009,14 +1010,14 @@ class SearchViewTest(BaseAcceptanceTest):
 	def test_failing_search(self):
 
 		# Search for something that is not present
-		response = self.client.get('/search?q=wibble', follow = True)
+		response = self.client.get(reverse('blogengine:search') + '?q=wibble', follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Confirm that nothing was found
 		self.assertTrue('No posts found' in smart_text(response.content))
 
 		# Try to get nonexistent second page
-		response = self.client.get('/search?q=wibble&page=2', follow = True)
+		response = self.client.get(reverse('blogengine:search') + '?q=wibble&page=2', follow = True)
 		self.assertEquals(response.status_code, 200)
 
 		# Confirm that nothing was found
