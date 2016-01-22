@@ -8,9 +8,10 @@ env:
 before_install:
 - sudo apt-get install -y libmemcached-dev
 install: pip install -r requirements.txt
-script: export SECRET_KEY = $SECRET_KEY
-  coverage run --include="blogengine/*" --omit="blogengine/migrations/*" manage.py
-  test blogengine
+script: 
+- export SECRET_KEY = $SECRET_KEY
+- coverage run --include="blogengine/*" --omit="blogengine/migrations/*" manage.py
+- test blogengine
 after_success: coveralls
 deploy:
   provider: heroku
