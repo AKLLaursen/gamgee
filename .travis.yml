@@ -1,19 +1,16 @@
 language: python
 python:
 - 3.4.3
-# Implement memcaching
 services: memcached
 env:
   global:
-    - SECRET_KEY = 'a-h*o9rjul3-g3&jd3q%i795jwsq$n+-^2a=*(e6(1#ekd--5h'
+  	secure: zkVlw3UPqbmRi/ja4Eczb/yC2tZwc/cAKj1YbqOZVh9BTWiQL5oo2f06svNJfcMl+1LG6K8w9l4OAUpyNsQ+2G2pAlu5W5fQhg2Ok/liQrjDTmI+oq/lRV3NTlNst9gdNa2r3hyIKygLnbaO/X/ToN+Z/xnf+mlazXcCdBupvPNETMIo6G7+dARq0o98WkEJrX5UZFmlM+3D3gi97D23xYBPEWjBdhTg08spw8oOpc7X2l2nUvip//xXucETN07PC9j0ueUGyt16Pi0CM5lJgBAnW56cukf5jXcEEbKeZQP76B1yr8cq9v1wZqsrhI82TSUf5wF39oWzUt8RV6xcl/15XeJkOL8Gj9k2zDlcWGnFhq+nqVUvqi3Ro4XkerxUo/YeqlHzQ5vOG9uCazGkiEcD8b1HmIL60Mrd0O17BDswxw5DBWjbGiGSlAlhzCT1/od6oF7bl2pXTsL0PvTzrJyFzy97nFx1+lI4lA1ZYzgo0juKUMYq9iRt2DFxFU3z5aQ6WPEO87wAueevIS9x7R5tgKL58kqEvHMygpEccGDq7dKALFEmAg3jGzL6/U/62u6RrIA9S5fnpSMg0pzHW7Y3oOeEJzee71XJu5Cb5oC07q5LV6PDxwqP0lwLaBWh4PUGIWzBDC2q/r4JEl45p1RbLlT/e4qzq1aJgF0AzI8=
 before_install:
-    - sudo apt-get install -y libmemcached-dev
-# Installing dependencies
+- sudo apt-get install -y libmemcached-dev
 install: pip install -r requirements.txt
-# Run tests
-script: coverage run --include="blogengine/*" --omit="blogengine/migrations/*" manage.py
+script: export SECRET_KEY = $SECRET_KEY
+	coverage run --include="blogengine/*" --omit="blogengine/migrations/*" manage.py
   test blogengine
-# After success let coveralls generate report and push to heroku
 after_success: coveralls
 deploy:
   provider: heroku
