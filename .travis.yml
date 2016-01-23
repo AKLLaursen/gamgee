@@ -7,9 +7,8 @@ before_install:
 install: pip install -r requirements.txt
 env:
   global:
-    secure: CJWJTPh40RL46h8EyhX4pADH/+QgVJcKvPm2WJw3k0fxYOArzVNA4D7YKTKfpDaXCGsNa1Io991xI6BrDWTv35X1NLM+jMOVdJKmfF0PI3ds37GFd1WfzZ3fCta6cfn7uqvGvXvQvpQoTGxOuoi4grOuB8Ixq8qEppdTG0yYHVx24tKIMOnfKMTbCeD7aIIVPrDpKUchzuABpNnJXGZfVbRxwWz1xI0AoGE51WKxNbCtuwHt440IF/8uebwpaqvKyO01e0KpQ6YY8NOIsjcxMmc+Lt0FOxjPifSzQbsI+S1+YjgL1WILltoZ0VymmTdVFdpvpzA+omLfqf2ZYNGrE2Tr21mKTS+G48ZbHVEOf86PNsl0dB/4oZGX+/APw1XvTxsLXdiUKIrCsNVEMYDionyWNta6OegKXBhQ+dg7rhF99d3lifpNX4i0+pEBbEH4hEEeTDvVgdhAsxjAQRI0d83G6vhzf+CMcKCUIFtp9TirSp+kz4igFM/f87KfzlGMPJDl/EJcVv/2Ye8i2GX9Tdv95NKa3LTbd0wd0BlzqQ47joaWAbw1iBAGqGKMoNBTmWHwebjDaBdhEIRvAfvRRWW67QLXhT3NV7vm6AlcUh/JXm4lZ0s9L9BPoz8+6a3qkw04B5rqrqyL8qhMkjp5V9xAEaGLl9o9vvK/H8BNx+I=
+    - SECRET_KEY=travis_key
 script:
-- export SECRET_KEY=$SECRET_KEY
 - coverage run --include="blogengine/*" --omit="blogengine/migrations/*" manage.py
   test blogengine
 after_success: coveralls
