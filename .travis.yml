@@ -9,8 +9,7 @@ env:
   global:
     - SECRET_KEY=travis_key
 script:
-- coverage run --include="blogengine/*" --omit="blogengine/migrations/*" manage.py
-  test blogengine
+- coverage run --include="blogengine/*" --omit="blogengine/migrations/*" manage.py test blogengine
 after_success: coveralls
 deploy:
   provider: heroku

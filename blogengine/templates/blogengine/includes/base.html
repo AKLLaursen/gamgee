@@ -22,7 +22,9 @@
 
         <div class="jumbotron">
             <div class="container">
-                <h1>What is my name to be??</h1>
+                <a href="{% url 'blogengine:index' %}">
+                    <h1>Data-driven</h1>
+                </a>
                 <p>Andreas Keller Leth Laursen</p>
             </div>      
         </div>
@@ -31,9 +33,11 @@
             <div class="container">
                 <nav>
                     <ul class="nav nav-justified">
-                        <a class="navbar-brand" href="{% url 'blogengine:index' %}">
-                            Weblog
-                        </a>
+                        <li>
+                            <a href="{% url 'blogengine:index' %}">
+                                Weblog
+                            </a>
+                        </li>
                         {% load flatpages %}
                         {% get_flatpages as flatpages %}
                         {% for flatpage in flatpages %}
@@ -43,27 +47,42 @@
                                 </a>
                             </li>
                         {% endfor %}
-                        <li>
-                            <a href="/feeds/posts/">
-                            RSS feed
-                            </a>
-                        </li>
-                        <form action = "/search" method = "GET" class = "navbar-form navbar-left">
-                            <div class = "form-group">
-                                <input type = "text" name = "q" placeholder = "Search..." class = "form-control">
-                                </input>
-                            </div>
-                            <button type = "submit" class = "btn btn-default">
-                                Search
-                            </button>
-                        </form>
                     </ul>
                 </nav>
             </div>          
         </div>
-
-        {% block content %}{% endblock %}
-
+        <div class="blog">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-8 blog-main">
+                        {% block content %}{% endblock %}
+                    </div>
+                    <div class="col-md-4 blog-sidebar">
+                        <div class="sidebar-module sidebar-module-inset">
+                            <h4>About</h4>
+                            <p>Data is in everything, so let's give it a good shake and see what falls out!<p>
+                        </div>
+                            <form action="/search" method="GET" class="navbar-form navbar-left">
+                                <div class="form-group">
+                                    <input type="text" name="q" placeholder="Search..." class="form-control">
+                                    </input>
+                                </div>
+                                <button type="submit" class="btn btn-default">
+                                    Search
+                                </button>
+                            </form>
+                        <div class="sidebar-module">
+                            <h4>Archives</h4>
+                        </div>
+                        <div class="sidebar-module">
+                            <a href="/feeds/posts/">
+                                <h4>RSS Feed</h4>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="container footer">
             <div class="row">
                 <div class="span12">
