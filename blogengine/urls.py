@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.views.generic import ListView, DetailView
+from django.views.generic.dates import ArchiveIndexView
 from blogengine.models import Category, Tag, Post
 from blogengine.views import CategoryListView, TagListView, PostsFeed, CategoryPostsFeed, TagPostsFeed, getSearchResults
 from django.contrib.sitemaps.views import sitemap
@@ -46,5 +47,9 @@ urlpatterns = [
 
     # Sitemap
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name = 'django.contrib.sitemaps.views.sitemap'),
+
+    # Archive
+    url(r'^archive/$', ArchiveIndexView.as_view(model = Post, date_field = "pub_date"),
+    	name = "post_archive"),
 
 ]

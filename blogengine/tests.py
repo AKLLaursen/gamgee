@@ -847,6 +847,38 @@ class PostViewTest(BaseAcceptanceTest):
 		# Check second post present
 		self.assertTrue('my second blog post' in smart_text(response.content))
 
+class ArchiveTest(BaseAcceptanceTest):
+
+	def test_archive(self):
+
+		# Create the tag
+		tag = TagFactory()
+
+		# Create the site
+		post = PostFactory()
+
+		post.tags.add(tag)
+		post.save()
+
+		# Check new post saved
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+
+		# Get archive page
+		response = self.client.get(reverse('blogengine:post_archive'), follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the post title is in the reponse
+		self.assertTrue(post.title in smart_text(response.content))
+
+		# Check that the post date is in the response
+		self.assertTrue(str(post.pub_date.year) in smart_text(response.content))
+		self.assertTrue(post.pub_date.strftime('%b') in smart_text(response.content))
+		self.assertTrue(str(post.pub_date.day) in smart_text(response.content))
+
+		# Check the correct template was used
+		self.assertTemplateUsed(response, 'blogengine/post_archive.html')
+
 class FeedTest(BaseAcceptanceTest):
 
 	def test_all_post_feed(self):
