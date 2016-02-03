@@ -879,6 +879,40 @@ class ArchiveTest(BaseAcceptanceTest):
 		# Check the correct template was used
 		self.assertTemplateUsed(response, 'blogengine/post_archive.html')
 
+	def test_archive_month(self):
+
+		# Create the tag
+		tag = TagFactory()
+
+		# Create the site
+		post = PostFactory()
+
+		post.tags.add(tag)
+		post.save()
+
+		# Check new post saved
+		all_posts = Post.objects.all()
+		self.assertEquals(len(all_posts), 1)
+
+		# Month URL
+		month_url = '/' + str(post.pub_date.year) + '/' + post.pub_date.strftime('%m') + '/'
+		print(month_url)
+
+		# Get archive page
+		response = self.client.get(month_url, follow = True)
+		self.assertEquals(response.status_code, 200)
+
+		# Check that the post title is in the reponse
+		self.assertTrue(post.title in smart_text(response.content))
+
+		# Check that the post date is in the response
+		self.assertTrue(str(post.pub_date.year) in smart_text(response.content))
+		self.assertTrue(post.pub_date.strftime('%b') in smart_text(response.content))
+		self.assertTrue(str(post.pub_date.day) in smart_text(response.content))
+
+		# Check the correct template was used
+		self.assertTemplateUsed(response, 'blogengine/post_archive_month.html')
+
 class FeedTest(BaseAcceptanceTest):
 
 	def test_all_post_feed(self):

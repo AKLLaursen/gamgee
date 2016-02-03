@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q
 from django.views.generic import ListView
+from django.views.generic.dates import MonthArchiveView
 from django.contrib.syndication.views import Feed
 from blogengine.models import Category, Tag, Post
 from django.utils.safestring import mark_safe
@@ -61,6 +62,14 @@ class TagListView(ListView):
 			context['tag'] = None
 
 		return context
+
+#class MonthListView(ListView):	
+
+class PostMonthArchiveView(MonthArchiveView):
+
+	queryset = Post.objects.all()
+	date_field = "pub_date"
+	allow_future = True
 
 class PostsFeed(Feed):
 

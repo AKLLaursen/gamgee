@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.views.generic import ListView, DetailView
 from django.views.generic.dates import ArchiveIndexView
 from blogengine.models import Category, Tag, Post
-from blogengine.views import CategoryListView, TagListView, PostsFeed, CategoryPostsFeed, TagPostsFeed, getSearchResults
+from blogengine.views import CategoryListView, TagListView, PostMonthArchiveView, PostsFeed, CategoryPostsFeed, TagPostsFeed, getSearchResults
 from django.contrib.sitemaps.views import sitemap
 from blogengine.sitemap import PostSitemap, FlatpageSitemap
 
@@ -51,5 +51,10 @@ urlpatterns = [
     # Archive
     url(r'^archive/$', ArchiveIndexView.as_view(model = Post, date_field = "pub_date"),
     	name = "post_archive"),
+
+    # Month archive
+    url(r'^(?P<year>[0-9]{4})/(?P<month>[0-9]+)/$',
+    	PostMonthArchiveView.as_view(month_format = '%m'),
+    	name = "post_archive_month"),
 
 ]

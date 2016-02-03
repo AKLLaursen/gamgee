@@ -1,0 +1,26 @@
+{% extends "blogengine/includes/base.html" %}
+
+{% load custom_markdown %}
+
+    {% block content %}
+
+        <div class="archive-list">
+            <ul>
+                {% for post in object_list %}
+                    <li>
+                        {{ post.pub_date|date:"F j, Y" }}: {{ post.title }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <p>
+            {% if previous_month %}
+                Previous Month: {{ previous_month|date:"F Y" }}
+            {% endif %}
+            {% if next_month %}
+                Next Month: {{ next_month|date:"F Y" }}
+            {% endif %}
+        </p>
+
+    {% endblock %}

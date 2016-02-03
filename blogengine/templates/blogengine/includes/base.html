@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>{% block title %}akll.io{% endblock %}</title>
+        <title>{% block title %}Simply Data{% endblock %}</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="alternate" type="application/rss+xml" title="Blog posts" href="/feeds/posts/" >
@@ -23,7 +23,7 @@
         <div class="jumbotron">
             <div class="container">
                 <a href="{% url 'blogengine:index' %}">
-                    <h1>Data-driven</h1>
+                    <h1>Simply Data</h1>
                 </a>
                 <p>Andreas Keller Leth Laursen</p>
             </div>      
@@ -32,7 +32,7 @@
         <div class="masthead">
             <div class="container">
                 <nav>
-                    <ul class="nav nav-justified">
+                    <ul class="nav nav-justified span8">
                         <li>
                             <a href="{% url 'blogengine:index' %}">
                                 Weblog
@@ -51,41 +51,48 @@
                 </nav>
             </div>          
         </div>
+
         <div class="blog">
             <div class="container">
                 <div class="row">
+
                     <div class="col-md-8 blog-main">
                         {% block content %}{% endblock %}
                     </div>
-                    <div class="col-md-4 blog-sidebar">
-                        <div class="sidebar-module sidebar-module-inset">
+
+                    <div class="col-md-3 col-md-offset-1 blog-sidebar">
+                        <div class="sidebar-module sidebar-module-inset about">
                             <h4>About</h4>
-                            <p>Data is in everything, so let's give it a good shake and see what falls out!<p>
+                            <p>Data is in everything, so let's give it a good shake and see what falls out!</p>
                         </div>
-                            <form action="/search" method="GET" class="navbar-form navbar-left">
+                        <div class="sidebar-module search">
+                            <form action="/search" method="GET" class="form-inline">
                                 <div class="form-group">
-                                    <input type="text" name="q" placeholder="Search..." class="form-control">
-                                    </input>
+                                    <input type="text" name="q" placeholder="Search..." class="form-control"></input>
                                 </div>
                                 <button type="submit" class="btn btn-default">
                                     Search
                                 </button>
                             </form>
-                        <div class="sidebar-module">
-                            <h4>Archives</h4>
+                        <div class="sidebar-module archive">
                             <a href="{% url 'blogengine:post_archive' %}">
-                                Full archive
+                                <h4>Archives</h4>
+                            </a>
+                            <a href="/2016/01/">
+                                January
                             </a>
                         </div>
-                        <div class="sidebar-module">
+                        <div class="sidebar-module feed">
                             <a href="/feeds/posts/">
                                 <h4>RSS Feed</h4>
                             </a>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+                    
         <div class="container footer">
             <div class="row">
                 <div class="span12">
