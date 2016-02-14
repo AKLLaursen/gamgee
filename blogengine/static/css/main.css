@@ -3,10 +3,6 @@ body {
   font-weight: 300;
 }
 
-.form-inline {
-  width: 100%;
-}
-
 .jumbotron {
   height: 200px;
   border-bottom-style: solid;
@@ -39,13 +35,11 @@ ul.nav li.active a {
     color: black !important;
 }
 
-.sidebar-module {
-    padding: 15px;
-    margin: 0 -15px 15px;
+.sidebar-module-inset {
+  background-color: #f5f5f5;
 }
 
-.sidebar-module-inset {
-  padding: 15px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
+.blog-sidebar ul {
+  padding-left: 0;
+  list-style-type: none;
 }

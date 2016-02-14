@@ -6,6 +6,7 @@ module.exports = function (grunt) {
                 src: [
                     'blogengine/static/bower_components/bootstrap/dist/css/bootstrap.css',
                     'blogengine/static/bower_components/bootstrap/dist/css/bootstrap-theme.css',
+                    'blogengine/static/bower_components/components-font-awesome/css/font-awesome.min.css',
                     'blogengine/static/css/code.css',
                     'blogengine/static/css/main.css',
                 ],
