@@ -6,8 +6,16 @@ body {
 .jumbotron {
   height: 200px;
   border-bottom-style: solid;
-  border-bottom-color: #CCCCCC;
+  border-bottom-color: #4B88A2;
   background-color: transparent !important;
+}
+
+#headline {
+  color: #4B88A2;
+}
+
+.jumbotron .container a:link {
+    text-decoration: none;
 }
 
 .jumbotron {
@@ -29,6 +37,7 @@ ul.nav li a, ul.nav li a:visited {
 
 ul.nav li a:hover, ul.nav li a:active {
     color: black !important;
+    background-color: #f5f5f5 !important;
 }
 
 ul.nav li.active a {
