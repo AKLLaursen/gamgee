@@ -2,25 +2,20 @@
 
 {% load custom_markdown %}
 
-    {% block content %}
+  {% block content %}
 
-        <div class="archive-list">
-            <ul>
-                {% for post in object_list %}
-                    <li>
-                        {{ post.pub_date|date:"F j, Y" }}: {{ post.title }}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+    <div class="archive-list">
+      <ul>
+        {% for post in object_list %}
+          <li>
+            <h4>
+              <a href="{{ post.get_absolute_url }}">
+                {{ post.pub_date|date:"F j, Y" }}: {{ post.title }}
+              </a>
+            </h4>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
 
-        <p>
-            {% if previous_month %}
-                Previous Month: {{ previous_month|date:"F Y" }}
-            {% endif %}
-            {% if next_month %}
-                Next Month: {{ next_month|date:"F Y" }}
-            {% endif %}
-        </p>
-
-    {% endblock %}
+  {% endblock %}

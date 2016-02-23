@@ -8,7 +8,9 @@
         {% for post in latest %}
           <li>
             <h4>
-              <a href="{{ post.get_absolute_url }}">{{ post.title }}, {{ post.pub_date }}
+              <a href="{{ post.get_absolute_url }}">
+                {{ post.pub_date|date:"F j, Y" }}: {{ post.title }}
+              </a>
             </h4>
           </li>
         {% endfor %}
