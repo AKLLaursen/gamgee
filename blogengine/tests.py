@@ -896,7 +896,6 @@ class ArchiveTest(BaseAcceptanceTest):
 
 		# Month URL
 		month_url = '/' + str(post.pub_date.year) + '/' + post.pub_date.strftime('%m') + '/'
-		print(month_url)
 
 		# Get archive page
 		response = self.client.get(month_url, follow = True)
