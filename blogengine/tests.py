@@ -127,7 +127,7 @@ class PostTest(TestCase):
 		self.assertEquals(only_category.name, 'Data Science - Test')
 		self.assertEquals(only_category.description, 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.')
 		self.assertEquals(only_category.slug, 'data-science-test')
-		self.assertEquals(only_category.__unicode__(), 'Data Science - Test')
+		self.assertEquals(only_category.__str__(), 'Data Science - Test')
 
 	def test_create_tag(self):
 
@@ -144,7 +144,7 @@ class PostTest(TestCase):
 		self.assertEquals(only_tag.name, 'R')
 		self.assertEquals(only_tag.description, 'The R programming language')
 		self.assertEquals(only_tag.slug, 'r')
-		self.assertEquals(only_tag.__unicode__(), 'R')
+		self.assertEquals(only_tag.__str__(), 'R')
 
 	def test_create_post(self):
 
@@ -178,7 +178,7 @@ class PostTest(TestCase):
 		self.assertEquals(only_post.category.description, 'Test: Data Science is an interdisciplinary field about processes and systems to extract knowledge or insights from data in various forms.')
 		self.assertEquals(only_post.text, 'This is a test post for testing.')
 		self.assertEquals(only_post.slug, 'test-post')
-		self.assertEquals(only_post.__unicode__(), 'Test post')
+		self.assertEquals(only_post.__str__(), 'Test post')
 		self.assertEquals(only_post.site.name, 'example.com')
 		self.assertEquals(only_post.site.domain, 'example.com')
 

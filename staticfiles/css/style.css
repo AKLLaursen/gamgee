@@ -7414,6 +7414,12 @@ body {
   font-weight: 300;
 }
 
+img {
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .jumbotron {
   height: 200px;
   border-bottom-style: solid;

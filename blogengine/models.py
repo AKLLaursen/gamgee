@@ -22,7 +22,7 @@ class Category(models.Model):
 	def get_absolute_url(self):
 		return '/category/{0}/'.format(self.slug)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.name
 
 	class Meta:
@@ -45,7 +45,7 @@ class Tag(models.Model):
 	def get_absolute_url(self):
 		return "/tag/%s/" % (self.slug)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.name
 
 # Blogpost model
@@ -65,7 +65,7 @@ class Post(models.Model):
 	def get_absolute_url(self):
 		return '/{0}/{1}/{2}/{3}/'.format(self.pub_date.year, self.pub_date.month, self.pub_date.day, self.slug)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.title
 
 	class Meta:
