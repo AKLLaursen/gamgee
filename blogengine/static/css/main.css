@@ -64,3 +64,170 @@ code {
   background-color: #f5f5f5;
   border-radius: 4px;
 }
+
+#Cv html, #Cv body, #Cv main, #Cv section, #Cv header, #Cv ul, #Cv p, #Cv h1, #Cv h2, #Cv h3 {
+  font-size: 14px;
+  margin: 0; padding: 0;
+  display: block;
+}
+
+#Cv a {
+  color: #337ab7;
+  text-decoration: none;
+}
+
+#Cv a:visited {
+  color: #337ab7;
+}
+
+#Cv a:hover {
+  text-decoration: underline;
+}
+
+#Cv h1 {
+  text-transform: uppercase;
+  font-size:
+}
+
+#Cv h2 {
+  text-transform: uppercase;
+  color: #898989;
+  font-size: 2em;
+  position: relative;
+  font-weight: 400;
+}
+
+#Cv h3, #Cv .tenure {
+  font-size: 1.5em;
+  font-weight: 300;
+}
+
+#Cv h3 {
+  margin-top: 0;
+  width: 66%;
+  float: left;
+}
+
+#Cv table {
+  width: 100%;
+  text-transform: uppercase;
+  font-size: 1.3em;
+}
+
+#Cv td:first-child {
+  text-align: right;
+  color: #A9A9A9;
+  letter-spacing: 5px;
+  font-weight: bold;
+}
+
+#Cv td:last-child {
+  text-align: justify; /* HTML justification sucks, but in this case... */
+}
+
+#Cv hr {
+  display: none;
+}
+
+#Cv main {
+  padding: 15px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+#Cv section {
+  margin-top: 1em;
+}
+
+#Cv section > div {
+  margin-top: 1em;
+  overflow: hidden; /* Clear floated children */
+}
+
+#Cv section > div p {
+  clear: both;
+}
+
+#Cv section > header {
+  position: relative;
+}
+
+#Cv ul {
+  clear: both;
+}
+
+#Cv li {
+  margin-left: 2em;
+}
+
+#Cv p, #Cv li {
+  text-align: justify;
+}
+
+#Cv .tenure {
+  float: right;
+  color: #6F6F6F;
+  background-color: #F5F5F5;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 85%;
+}
+
+#Cv span.keywords {
+  font-size: 10px;
+  color: #21897E;
+}
+
+#Cv thead {
+  display: none;
+}
+
+#Cv main > header {
+  width: 100%;
+  float: left;
+  margin-bottom: 1em;
+}
+
+#Cv h1 {
+  float: left;
+}
+
+#Cv h1, #Cv h2, #Cv .label {
+  font-size: 2.5em;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+#Cv #contact {
+ clear: both;
+ float: right;
+}
+
+#Cv header > span.fa {
+  text-align: center;
+  margin-right: 3px;
+  position: absolute;
+  width: 40px;
+  top: 10px;
+  font-size: 30px;
+  /*transform: translateX(-110%); PDF no likey */
+  margin-left: -50px;
+  color: #DADADA;
+}
+
+#Cv .label {
+  float: right;
+  color: #DADADA;
+}
+
+#Cv #summary {
+  color: #717171;
+  font-size: 1.25em;
+}
+
+.about > h1 {
+  color: transparent;
+  height: 0px;
+  margin-bottom: 0px;
+  margin-top: 20px;
+}
