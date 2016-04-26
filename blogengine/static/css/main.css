@@ -225,6 +225,13 @@ code {
   font-size: 1.25em;
 }
 
+#Cv .email:before {
+  display: inline-block;
+  content: attr(data-website) "\0040" attr(data-user);
+  unicode-bidi: bidi-override;
+  direction: rtl;
+}
+
 .about > h1 {
   color: transparent;
   height: 0px;
