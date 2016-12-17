@@ -6,3 +6,4 @@ htmlcov/
 .coverage
 node_modules/
 commands.txt
+.DS_Store
