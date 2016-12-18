@@ -6,6 +6,9 @@ from blogengine.views import CategoryListView, TagListView, PostMonthArchiveView
 from django.contrib.sitemaps.views import sitemap
 from blogengine.sitemap import PostSitemap, FlatpageSitemap
 
+# Define appname
+app_name = 'blogengine'
+
 # Define sitemaps
 sitemaps = {
 	'posts': PostSitemap,

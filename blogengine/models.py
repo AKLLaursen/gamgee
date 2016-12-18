@@ -53,13 +53,13 @@ class Post(models.Model):
 
 	# Model specifications
 	title = models.CharField(max_length = 200)
-	author = models.ForeignKey(User)
-	category = models.ForeignKey(Category, blank = True, null = True)
+	author = models.ForeignKey(User, on_delete = models.CASCADE)
+	category = models.ForeignKey(Category, blank = True, null = True, on_delete = models.CASCADE)
 	tags = models.ManyToManyField(Tag,  blank = True, null = True)
 	pub_date = models.DateTimeField()
 	text = models.TextField()
 	slug = models.SlugField(max_length = 40, unique = True)
-	site = models.ForeignKey(Site)
+	site = models.ForeignKey(Site, on_delete = models.CASCADE)
 
 	# Define url for each post. (Possibly change this to have 0 in front of single number elements.)
 	def get_absolute_url(self):
